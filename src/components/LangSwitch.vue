@@ -14,7 +14,7 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { ArrowDown } from '@element-plus/icons-vue'
 
@@ -24,6 +24,8 @@ const currentLang = computed(() => locale.value)
 const handleCommand = (command) => {
   locale.value = command
   localStorage.setItem('locale', command)
+  // 刷新页面以确保所有组件都重新渲染
+  window.location.reload()
 }
 </script>
 

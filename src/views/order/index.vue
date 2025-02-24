@@ -1,38 +1,50 @@
 <template>
-  <div class="order-container">
-    <el-card class="box-card">
-      <!-- 搜索区域 -->
-      <div class="search-bar">
-        <el-form :inline="true" :model="searchForm">
-          <el-form-item :label="$t('order.orderNo')">
-            <el-input v-model="searchForm.orderNo" :placeholder="$t('common.search')" />
-          </el-form-item>
-          <el-form-item :label="$t('order.status')">
-            <el-select v-model="searchForm.status" :placeholder="$t('common.all')">
-              <el-option :label="$t('common.all')" value="" />
-              <el-option
-                v-for="(value, key) in orderStatus"
-                :key="key"
-                :label="$t(`order.status.${key}`)"
-                :value="key"
-              />
-            </el-select>
-          </el-form-item>
-          <el-form-item>
-            <el-button type="primary" @click="handleSearch">{{ $t('common.search') }}</el-button>
-            <el-button @click="resetSearch">{{ $t('common.reset') }}</el-button>
-          </el-form-item>
-        </el-form>
-      </div>
+  <div class="order-list">
+    <el-card>
+      <el-form :inline="true" :model="searchForm" class="search-form">
+        <el-form-item :label="$t('order.orderNo')">
+          <el-input v-model="searchForm.orderNo" :placeholder="$t('common.search')" />
+        </el-form-item>
+        <el-form-item :label="$t('order.status')">
+          <el-select v-model="searchForm.status" :placeholder="$t('common.all')">
+            <el-option :label="$t('common.all')" value="" />
+            <el-option
+              v-for="status in ['pending', 'paid', 'shipped', 'completed', 'cancelled', 'refunding']"
+              :key="status"
+              :label="$t(`order.status.${status}`)"
+              :value="status"
+            />
+          </el-select>
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary" @click="handleSearch">{{ $t('common.search') }}</el-button>
+          <el-button @click="resetSearch">{{ $t('common.reset') }}</el-button>
+        </el-form-item>
+      </el-form>
 
-      <!-- 订单列表 -->
       <el-table :data="orderList" v-loading="loading" style="width: 100%">
         <el-table-column prop="orderNo" :label="$t('order.orderNo')" width="180" />
+        <el-table-column :label="$t('order.items')" min-width="300">
+          <template #default="scope">
+            <div v-for="item in scope.row.items" :key="item.id" class="order-item">
+              <el-image 
+                :src="item.images[0]" 
+                fit="cover"
+                class="product-image"
+              />
+              <div class="item-info">
+                <div class="item-name">{{ item.name }}</div>
+                <div class="item-price">¥{{ item.price.toFixed(2) }}</div>
+              </div>
+            </div>
+          </template>
+        </el-table-column>
         <el-table-column prop="amount" :label="$t('order.amount')" width="120">
           <template #default="scope">
             ¥{{ scope.row.amount.toFixed(2) }}
           </template>
         </el-table-column>
+        <el-table-column prop="customerName" :label="$t('order.customer')" width="120" />
         <el-table-column prop="status" :label="$t('order.status')" width="120">
           <template #default="scope">
             <el-tag :type="getOrderStatusType(scope.row.status)">
@@ -40,15 +52,13 @@
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="customerName" :label="$t('order.customerName')" width="120" />
-        <el-table-column prop="phone" :label="$t('order.phone')" width="120" />
         <el-table-column prop="createTime" :label="$t('order.createTime')" width="180" />
-        <el-table-column :label="$t('product.operation')" width="200" fixed="right">
+        <el-table-column :label="$t('common.operation')" width="200" fixed="right">
           <template #default="scope">
             <el-button 
               size="small"
               @click="handleDetail(scope.row)"
-            >{{ $t('order.detail') }}</el-button>
+            >{{ $t('common.detail') }}</el-button>
             <el-button
               v-if="scope.row.status === 'paid'"
               size="small"
@@ -59,55 +69,18 @@
         </el-table-column>
       </el-table>
 
-      <!-- 分页 -->
-      <div class="pagination-container">
+      <div class="pagination">
         <el-pagination
           v-model:current-page="currentPage"
           v-model:page-size="pageSize"
-          :page-sizes="[10, 20, 50, 100]"
           :total="total"
+          :page-sizes="[10, 20, 50, 100]"
           layout="total, sizes, prev, pager, next, jumper"
           @size-change="handleSizeChange"
           @current-change="handleCurrentChange"
         />
       </div>
     </el-card>
-
-    <!-- 发货对话框 -->
-    <el-dialog
-      v-model="shipDialogVisible"
-      :title="$t('order.shipTitle')"
-      width="500px"
-    >
-      <el-form
-        ref="shipFormRef"
-        :model="shipForm"
-        :rules="shipRules"
-        label-width="100px"
-      >
-        <el-form-item :label="$t('order.trackingNo')" prop="trackingNo">
-          <el-input v-model="shipForm.trackingNo" />
-        </el-form-item>
-        <el-form-item :label="$t('order.carrier')" prop="carrier">
-          <el-select v-model="shipForm.carrier" class="w-100">
-            <el-option
-              v-for="item in carriers"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value"
-            />
-          </el-select>
-        </el-form-item>
-      </el-form>
-      <template #footer>
-        <span class="dialog-footer">
-          <el-button @click="shipDialogVisible = false">{{ $t('common.cancel') }}</el-button>
-          <el-button type="primary" @click="confirmShip" :loading="submitting">
-            {{ $t('common.confirm') }}
-          </el-button>
-        </span>
-      </template>
-    </el-dialog>
   </div>
 </template>
 
@@ -116,82 +89,53 @@ import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { getOrderList, shipOrder } from '@/api/order'
+import { getOrderList } from '@/api/mock'
 
 const { t } = useI18n()
 const router = useRouter()
 
-// 订单状态
-const orderStatus = {
-  pending: 'warning',
-  paid: 'success',
-  shipped: 'primary',
-  completed: 'success',
-  cancelled: 'info'
-}
-
-// 快递公司列表
-const carriers = [
-  { label: '顺丰快递', value: 'SF' },
-  { label: '中通快递', value: 'ZTO' },
-  { label: '圆通快递', value: 'YTO' },
-  { label: '韵达快递', value: 'YD' },
-  { label: '申通快递', value: 'STO' }
-]
-
-// 列表相关
 const loading = ref(false)
-const orderList = ref([])
 const currentPage = ref(1)
 const pageSize = ref(10)
 const total = ref(0)
+const orderList = ref([])
+
 const searchForm = ref({
   orderNo: '',
   status: ''
 })
 
-// 发货相关
-const shipDialogVisible = ref(false)
-const shipFormRef = ref(null)
-const submitting = ref(false)
-const currentOrder = ref(null)
-const shipForm = ref({
-  trackingNo: '',
-  carrier: ''
-})
-
-const shipRules = {
-  trackingNo: [
-    { required: true, message: t('validate.trackingNoRequired'), trigger: 'blur' }
-  ],
-  carrier: [
-    { required: true, message: t('validate.carrierRequired'), trigger: 'change' }
-  ]
+const getOrderStatusType = (status) => {
+  const types = {
+    pending: 'warning',
+    paid: 'success',
+    shipped: 'primary',
+    completed: 'success',
+    cancelled: 'info',
+    refunding: 'warning',
+    refunded: 'info',
+    processing: 'warning'
+  }
+  return types[status] || 'info'
 }
 
-// 获取订单列表
-const fetchOrders = async () => {
+const fetchData = async () => {
   loading.value = true
   try {
-    const { list, total: totalCount } = await getOrderList({
-      page: currentPage.value,
-      pageSize: pageSize.value,
-      ...searchForm.value
-    })
+    const { total: totalCount, list } = await getOrderList()
     orderList.value = list
     total.value = totalCount
   } catch (error) {
-    console.error('Failed to fetch orders:', error)
-    ElMessage.error(t('message.fetchFailed'))
+    console.error('Failed to fetch order list:', error)
+    ElMessage.error(error.message)
   } finally {
     loading.value = false
   }
 }
 
-// 搜索相关方法
 const handleSearch = () => {
   currentPage.value = 1
-  fetchOrders()
+  fetchData()
 }
 
 const resetSearch = () => {
@@ -202,82 +146,93 @@ const resetSearch = () => {
   handleSearch()
 }
 
-const handleSizeChange = (val) => {
-  pageSize.value = val
-  fetchOrders()
-}
-
-const handleCurrentChange = (val) => {
-  currentPage.value = val
-  fetchOrders()
-}
-
-// 订单操作方法
-const getOrderStatusType = (status) => {
-  return orderStatus[status] || 'info'
-}
-
 const handleDetail = (row) => {
   router.push(`/order/${row.id}`)
 }
 
 const handleShip = (row) => {
-  currentOrder.value = row
-  shipForm.value = {
-    trackingNo: '',
-    carrier: ''
-  }
-  shipDialogVisible.value = true
-}
-
-const confirmShip = async () => {
-  if (!shipFormRef.value) return
-
-  await shipFormRef.value.validate(async (valid) => {
-    if (valid) {
-      submitting.value = true
-      try {
-        await shipOrder(currentOrder.value.id, shipForm.value)
-        ElMessage.success(t('message.shipSuccess'))
-        shipDialogVisible.value = false
-        fetchOrders()
-      } catch (error) {
-        console.error('Failed to ship order:', error)
-        ElMessage.error(t('message.shipFailed'))
-      } finally {
-        submitting.value = false
-      }
+  ElMessageBox.confirm(
+    `${t('order.confirmShip')}: ${row.orderNo}`,
+    t('common.warning'),
+    {
+      confirmButtonText: t('common.confirm'),
+      cancelButtonText: t('common.cancel'),
+      type: 'warning',
+    }
+  ).then(async () => {
+    try {
+      await handleSuccess()
+      ElMessage.success(t('order.shipSuccess'))
+      fetchData()
+    } catch (error) {
+      ElMessage.error(error.message)
     }
   })
 }
 
+const handleSizeChange = (val) => {
+  pageSize.value = val
+  fetchData()
+}
+
+const handleCurrentChange = (val) => {
+  currentPage.value = val
+  fetchData()
+}
+
 onMounted(() => {
-  fetchOrders()
+  fetchData()
 })
 </script>
 
 <style scoped>
-.order-container {
+.order-list {
   padding: 20px;
 }
 
-.search-bar {
+.search-form {
   margin-bottom: 20px;
 }
 
-.pagination-container {
+.order-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 5px 0;
+}
+
+.order-item:not(:last-child) {
+  border-bottom: 1px solid #ebeef5;
+}
+
+.product-image {
+  width: 50px;
+  height: 50px;
+  border-radius: 4px;
+}
+
+.item-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.item-name {
+  font-size: 14px;
+  color: #303133;
+  margin-bottom: 4px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.item-price {
+  font-size: 13px;
+  color: #f56c6c;
+}
+
+.pagination {
   margin-top: 20px;
   display: flex;
   justify-content: flex-end;
-}
-
-.w-100 {
-  width: 100%;
-}
-
-.dialog-footer {
-  display: flex;
-  justify-content: flex-end;
-  gap: 10px;
 }
 </style>

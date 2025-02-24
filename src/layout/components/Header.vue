@@ -22,22 +22,7 @@
       </div>
 
       <div class="action-item">
-        <el-dropdown trigger="click">
-          <span class="language-switch">
-            <svg-icon icon-class="language" />
-            <span>{{ currentLang === 'zh' ? '中文' : 'English' }}</span>
-          </span>
-          <template #dropdown>
-            <el-dropdown-menu>
-              <el-dropdown-item @click="handleSetLanguage('zh')">
-                中文
-              </el-dropdown-item>
-              <el-dropdown-item @click="handleSetLanguage('en')">
-                English
-              </el-dropdown-item>
-            </el-dropdown-menu>
-          </template>
-        </el-dropdown>
+        <LangSwitch />
       </div>
 
       <div class="action-item">
@@ -69,6 +54,7 @@ import { ref, computed } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { ElMessageBox } from 'element-plus'
+import LangSwitch from '@/components/LangSwitch.vue'
 import {
   Expand,
   Fold,

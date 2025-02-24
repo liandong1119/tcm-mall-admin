@@ -18,6 +18,17 @@
               />
             </el-select>
           </el-form-item>
+          <el-form-item :label="$t('review.status')">
+            <el-select v-model="searchForm.status" :placeholder="$t('common.all')">
+              <el-option :label="$t('common.all')" value="" />
+              <el-option
+                v-for="(label, value) in reviewStatus"
+                :key="value"
+                :label="label"
+                :value="value"
+              />
+            </el-select>
+          </el-form-item>
           <el-form-item>
             <el-button type="primary" @click="handleSearch">{{ $t('common.search') }}</el-button>
             <el-button @click="resetSearch">{{ $t('common.reset') }}</el-button>
@@ -27,15 +38,37 @@
 
       <!-- 评价列表 -->
       <el-table :data="reviewList" v-loading="loading" style="width: 100%">
-        <el-table-column prop="id" label="ID" width="80" />
-        <el-table-column prop="productName" :label="$t('review.productName')" width="200" />
+        <el-table-column prop="productName" :label="$t('review.productName')" min-width="200">
+          <template #default="scope">
+            <div class="product-info">
+              <el-image 
+                :src="scope.row.images[0]" 
+                fit="cover"
+                class="product-image"
+              />
+              <span>{{ scope.row.productName }}</span>
+            </div>
+          </template>
+        </el-table-column>
         <el-table-column prop="rating" :label="$t('review.rating')" width="120">
           <template #default="scope">
-            <el-rate v-model="scope.row.rating" disabled />
+            <el-rate
+              v-model="scope.row.rating"
+              disabled
+              show-score
+              text-color="#ff9900"
+            />
           </template>
         </el-table-column>
         <el-table-column prop="content" :label="$t('review.content')" show-overflow-tooltip />
         <el-table-column prop="username" :label="$t('review.username')" width="120" />
+        <el-table-column prop="status" :label="$t('review.status')" width="100">
+          <template #default="scope">
+            <el-tag :type="getStatusType(scope.row.status)">
+              {{ reviewStatus[scope.row.status] }}
+            </el-tag>
+          </template>
+        </el-table-column>
         <el-table-column prop="createTime" :label="$t('review.createTime')" width="180" />
         <el-table-column :label="$t('common.operation')" width="200" fixed="right">
           <template #default="scope">
@@ -70,61 +103,86 @@
     <el-dialog
       v-model="detailDialogVisible"
       :title="$t('review.detail')"
-      width="600px"
+      width="700px"
     >
       <el-descriptions :column="2" border>
         <el-descriptions-item :label="$t('review.productName')">
           {{ currentReview.productName }}
         </el-descriptions-item>
-        <el-descriptions-item :label="$t('review.rating')">
-          <el-rate v-model="currentReview.rating" disabled />
+        <el-descriptions-item :label="$t('merchant.name')">
+          {{ currentReview.merchantName }}
         </el-descriptions-item>
         <el-descriptions-item :label="$t('review.username')">
           {{ currentReview.username }}
         </el-descriptions-item>
+        <el-descriptions-item :label="$t('review.rating')">
+          <el-rate
+            v-model="currentReview.rating"
+            disabled
+            show-score
+            text-color="#ff9900"
+          />
+        </el-descriptions-item>
         <el-descriptions-item :label="$t('review.createTime')">
           {{ currentReview.createTime }}
+        </el-descriptions-item>
+        <el-descriptions-item :label="$t('review.status')">
+          <el-tag :type="getStatusType(currentReview.status)">
+            {{ reviewStatus[currentReview.status] }}
+          </el-tag>
         </el-descriptions-item>
         <el-descriptions-item :label="$t('review.content')" :span="2">
           {{ currentReview.content }}
         </el-descriptions-item>
-        <el-descriptions-item v-if="currentReview.images" :label="$t('review.images')" :span="2">
+        <el-descriptions-item :label="$t('review.images')" :span="2" v-if="currentReview.images?.length">
           <el-image
             v-for="(url, index) in currentReview.images"
             :key="index"
             :src="url"
             :preview-src-list="currentReview.images"
+            fit="cover"
             class="review-image"
           />
         </el-descriptions-item>
-        <el-descriptions-item v-if="currentReview.reply" :label="$t('review.reply')" :span="2">
+        <el-descriptions-item :label="$t('review.reply')" :span="2" v-if="currentReview.reply">
           {{ currentReview.reply }}
         </el-descriptions-item>
       </el-descriptions>
-
-      <div v-if="!currentReview.reply" class="reply-form">
-        <el-form :model="replyForm">
-          <el-form-item :label="$t('review.reply')">
-            <el-input
-              v-model="replyForm.content"
-              type="textarea"
-              :rows="3"
-              :placeholder="$t('review.replyPlaceholder')"
-            />
-          </el-form-item>
-        </el-form>
+      <div class="dialog-footer">
+        <el-button @click="detailDialogVisible = false">{{ $t('common.close') }}</el-button>
+        <el-button
+          v-if="!currentReview.reply"
+          type="primary"
+          @click="handleReply"
+        >{{ $t('review.reply') }}</el-button>
       </div>
+    </el-dialog>
 
+    <!-- 回复对话框 -->
+    <el-dialog
+      v-model="replyDialogVisible"
+      :title="$t('review.reply')"
+      width="500px"
+    >
+      <el-form
+        ref="replyFormRef"
+        :model="replyForm"
+        :rules="replyRules"
+      >
+        <el-form-item :label="$t('review.replyContent')" prop="content">
+          <el-input
+            v-model="replyForm.content"
+            type="textarea"
+            :rows="4"
+            :placeholder="$t('review.replyPlaceholder')"
+          />
+        </el-form-item>
+      </el-form>
       <template #footer>
         <span class="dialog-footer">
-          <el-button @click="detailDialogVisible = false">{{ $t('common.close') }}</el-button>
-          <el-button
-            v-if="!currentReview.reply"
-            type="primary"
-            @click="handleReply"
-            :loading="submitting"
-          >
-            {{ $t('review.submitReply') }}
+          <el-button @click="replyDialogVisible = false">{{ $t('common.cancel') }}</el-button>
+          <el-button type="primary" @click="confirmReply" :loading="submitting">
+            {{ $t('common.confirm') }}
           </el-button>
         </span>
       </template>
@@ -136,9 +194,16 @@
 import { ref, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { getReviewList, replyReview, deleteReview } from '@/api/review'
+import { getReviewList } from '@/api/mock'
 
 const { t } = useI18n()
+
+// 评价状态
+const reviewStatus = {
+  pending: t('review.pending'),
+  replied: t('review.replied'),
+  hidden: t('review.hidden')
+}
 
 // 列表相关
 const loading = ref(false)
@@ -148,26 +213,34 @@ const pageSize = ref(10)
 const total = ref(0)
 const searchForm = ref({
   productName: '',
-  rating: ''
+  rating: '',
+  status: ''
 })
 
 // 详情相关
 const detailDialogVisible = ref(false)
 const currentReview = ref({})
+
+// 回复相关
+const replyDialogVisible = ref(false)
+const replyFormRef = ref(null)
 const submitting = ref(false)
 const replyForm = ref({
   content: ''
 })
 
+const replyRules = {
+  content: [
+    { required: true, message: t('validate.replyRequired'), trigger: 'blur' },
+    { min: 5, max: 500, message: t('validate.replyLength'), trigger: 'blur' }
+  ]
+}
+
 // 获取评价列表
 const fetchReviews = async () => {
   loading.value = true
   try {
-    const { list, total: totalCount } = await getReviewList({
-      page: currentPage.value,
-      pageSize: pageSize.value,
-      ...searchForm.value
-    })
+    const { list, total: totalCount } = await getReviewList()
     reviewList.value = list
     total.value = totalCount
   } catch (error) {
@@ -176,6 +249,16 @@ const fetchReviews = async () => {
   } finally {
     loading.value = false
   }
+}
+
+// 获取状态样式
+const getStatusType = (status) => {
+  const types = {
+    pending: 'warning',
+    replied: 'success',
+    hidden: 'info'
+  }
+  return types[status] || 'info'
 }
 
 // 搜索相关方法
@@ -187,7 +270,8 @@ const handleSearch = () => {
 const resetSearch = () => {
   searchForm.value = {
     productName: '',
-    rating: ''
+    rating: '',
+    status: ''
   }
   handleSearch()
 }
@@ -205,7 +289,6 @@ const handleCurrentChange = (val) => {
 // 评价操作方法
 const handleDetail = (row) => {
   currentReview.value = row
-  replyForm.value.content = ''
   detailDialogVisible.value = true
 }
 
@@ -220,37 +303,39 @@ const handleDelete = (row) => {
     }
   ).then(async () => {
     try {
-      await deleteReview(row.id)
+      await handleSuccess()
       ElMessage.success(t('message.deleteSuccess'))
       fetchReviews()
     } catch (error) {
-      console.error('Failed to delete review:', error)
       ElMessage.error(t('message.deleteFailed'))
     }
   })
 }
 
-const handleReply = async () => {
-  if (!replyForm.value.content) {
-    ElMessage.warning(t('review.replyRequired'))
-    return
-  }
+const handleReply = () => {
+  replyForm.value.content = ''
+  replyDialogVisible.value = true
+}
 
-  submitting.value = true
-  try {
-    await replyReview({
-      id: currentReview.value.id,
-      reply: replyForm.value.content
-    })
-    ElMessage.success(t('message.replySuccess'))
-    detailDialogVisible.value = false
-    fetchReviews()
-  } catch (error) {
-    console.error('Failed to reply review:', error)
-    ElMessage.error(t('message.replyFailed'))
-  } finally {
-    submitting.value = false
-  }
+const confirmReply = async () => {
+  if (!replyFormRef.value) return
+
+  await replyFormRef.value.validate(async (valid) => {
+    if (valid) {
+      submitting.value = true
+      try {
+        await handleSuccess()
+        ElMessage.success(t('message.replySuccess'))
+        replyDialogVisible.value = false
+        detailDialogVisible.value = false
+        fetchReviews()
+      } catch (error) {
+        ElMessage.error(t('message.replyFailed'))
+      } finally {
+        submitting.value = false
+      }
+    }
+  })
 }
 
 onMounted(() => {
@@ -267,27 +352,34 @@ onMounted(() => {
   margin-bottom: 20px;
 }
 
-.pagination-container {
-  margin-top: 20px;
+.product-info {
   display: flex;
-  justify-content: flex-end;
+  align-items: center;
+  gap: 10px;
+}
+
+.product-image {
+  width: 50px;
+  height: 50px;
+  border-radius: 4px;
 }
 
 .review-image {
   width: 100px;
   height: 100px;
   margin-right: 10px;
-  margin-bottom: 10px;
-  object-fit: cover;
+  border-radius: 4px;
+  cursor: pointer;
 }
 
-.reply-form {
+.pagination-container {
   margin-top: 20px;
-  padding-top: 20px;
-  border-top: 1px solid var(--el-border-color-light);
+  display: flex;
+  justify-content: flex-end;
 }
 
 .dialog-footer {
+  margin-top: 20px;
   display: flex;
   justify-content: flex-end;
   gap: 10px;

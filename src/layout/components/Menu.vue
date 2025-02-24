@@ -13,19 +13,18 @@
       <template #title>{{ $t('menu.dashboard') }}</template>
     </el-menu-item>
 
+    <el-menu-item index="/merchant/list">
+      <el-icon><Shop /></el-icon>
+      <template #title>{{ $t('menu.merchant') }}</template>
+    </el-menu-item>
+
     <el-sub-menu index="/product">
       <template #title>
-        <el-icon><Goods /></el-icon>
+        <el-icon><ShoppingBag /></el-icon>
         <span>{{ $t('menu.product') }}</span>
       </template>
-      <el-menu-item index="/product">
-        <el-icon><List /></el-icon>
-        <span>{{ $t('menu.productList') }}</span>
-      </el-menu-item>
-      <el-menu-item index="/category">
-        <el-icon><Files /></el-icon>
-        <span>{{ $t('menu.category') }}</span>
-      </el-menu-item>
+      <el-menu-item index="/product/list">{{ $t('menu.productList') }}</el-menu-item>
+      <el-menu-item index="/product/category">{{ $t('menu.category') }}</el-menu-item>
     </el-sub-menu>
 
     <el-sub-menu index="/order">
@@ -33,14 +32,8 @@
         <el-icon><ShoppingCart /></el-icon>
         <span>{{ $t('menu.order') }}</span>
       </template>
-      <el-menu-item index="/order">
-        <el-icon><List /></el-icon>
-        <span>{{ $t('menu.orderList') }}</span>
-      </el-menu-item>
-      <el-menu-item index="/order/refund">
-        <el-icon><RefreshRight /></el-icon>
-        <span>{{ $t('menu.refund') }}</span>
-      </el-menu-item>
+      <el-menu-item index="/order/list">{{ $t('menu.orderList') }}</el-menu-item>
+      <el-menu-item index="/order/refund">{{ $t('menu.refund') }}</el-menu-item>
     </el-sub-menu>
 
     <el-menu-item index="/review">
@@ -48,24 +41,14 @@
       <template #title>{{ $t('menu.review') }}</template>
     </el-menu-item>
 
-    <el-sub-menu index="/user">
-      <template #title>
-        <el-icon><User /></el-icon>
-        <span>{{ $t('menu.user') }}</span>
-      </template>
-      <el-menu-item index="/user">
-        <el-icon><List /></el-icon>
-        <span>{{ $t('menu.userList') }}</span>
-      </el-menu-item>
-      <el-menu-item index="/user/address">
-        <el-icon><Location /></el-icon>
-        <span>{{ $t('menu.address') }}</span>
-      </el-menu-item>
-    </el-sub-menu>
+    <el-menu-item index="/user/list">
+      <el-icon><User /></el-icon>
+      <template #title>{{ $t('menu.user') }}</template>
+    </el-menu-item>
 
     <el-menu-item index="/profile">
-      <el-icon><Setting /></el-icon>
-      <template #title>{{ $t('menu.settings') }}</template>
+      <el-icon><UserFilled /></el-icon>
+      <template #title>{{ $t('menu.profile') }}</template>
     </el-menu-item>
   </el-menu>
 </template>
@@ -75,15 +58,13 @@ import { computed } from 'vue'
 import { useRoute } from 'vue-router'
 import {
   Odometer,
-  Goods,
-  Files,
-  List,
+  ShoppingBag,
+  Shop,
+  ShoppingCart,
   ChatDotRound,
   User,
-  Setting,
-  ShoppingCart,
-  RefreshRight,
-  Location
+  UserFilled,
+  Setting
 } from '@element-plus/icons-vue'
 
 const route = useRoute()

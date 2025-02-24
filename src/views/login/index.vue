@@ -4,8 +4,8 @@
     <div class="login-banner">
       <img src="@/assets/login-banner.svg" alt="Login Banner">
       <div class="banner-text">
-        <h1 class="animate__animated animate__fadeInDown">中药商城管理系统</h1>
-        <p class="animate__animated animate__fadeInUp animate__delay-1s">Traditional Chinese Medicine Mall Management System</p>
+        <h1 class="animate__animated animate__fadeInDown">{{ $t('login.systemTitle') }}</h1>
+        <p class="animate__animated animate__fadeInUp animate__delay-1s">{{ $t('login.systemSubtitle') }}</p>
       </div>
     </div>
     
@@ -14,7 +14,7 @@
       <div class="login-box animate__animated animate__fadeInRight">
         <div class="login-header">
           <img src="@/assets/logo.svg" alt="Logo" class="login-logo animate__animated animate__bounceIn animate__delay-1s">
-          <h2 class="login-title">系统登录</h2>
+          <h2 class="login-title">{{ $t('login.title') }}</h2>
         </div>
         
         <!-- 登录表单 -->
@@ -28,7 +28,7 @@
           <el-form-item prop="username">
             <el-input
               v-model="loginForm.username"
-              placeholder="请输入用户名"
+              :placeholder="$t('validate.usernameRequired')"
               @keyup.enter="handleLogin"
             >
               <template #prefix>
@@ -41,7 +41,7 @@
             <el-input
               v-model="loginForm.password"
               type="password"
-              placeholder="请输入密码"
+              :placeholder="$t('validate.passwordRequired')"
               show-password
               @keyup.enter="handleLogin"
             >
@@ -55,7 +55,7 @@
             <div class="captcha-container">
               <el-input
                 v-model="loginForm.captcha"
-                placeholder="请输入验证码"
+                :placeholder="$t('login.captcha')"
                 @keyup.enter="handleLogin"
               >
                 <template #prefix>
@@ -64,7 +64,7 @@
               </el-input>
               <img 
                 :src="captchaUrl" 
-                alt="验证码"
+                :alt="$t('login.captcha')"
                 class="captcha-img"
                 @click="refreshCaptcha"
               >
@@ -72,8 +72,8 @@
           </el-form-item>
 
           <div class="form-operations">
-            <el-checkbox v-model="rememberMe">记住密码</el-checkbox>
-            <el-link type="primary" @click="forgotPassword">忘记密码？</el-link>
+            <el-checkbox v-model="rememberMe">{{ $t('login.rememberMe') }}</el-checkbox>
+            <el-link type="primary" @click="forgotPassword">{{ $t('login.forgotPassword') }}</el-link>
           </div>
 
           <el-form-item>
@@ -83,7 +83,7 @@
               class="login-button"
               @click="handleLogin"
             >
-              <span>登 录</span>
+              <span>{{ $t('login.loginButton') }}</span>
             </el-button>
           </el-form-item>
         </el-form>
