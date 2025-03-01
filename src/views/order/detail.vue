@@ -140,11 +140,11 @@ const orderStatus = {
 
 // 快递公司列表
 const carriers = [
-  { label: '顺丰快递', value: 'SF' },
-  { label: '中通快递', value: 'ZTO' },
-  { label: '圆通快递', value: 'YTO' },
-  { label: '韵达快递', value: 'YD' },
-  { label: '申通快递', value: 'STO' }
+  { label: t('order.carrier.sf'), value: 'SF' },
+  { label: t('order.carrier.zto'), value: 'ZTO' },
+  { label: t('order.carrier.yto'), value: 'YTO' },
+  { label: t('order.carrier.yd'), value: 'YD' },
+  { label: t('order.carrier.sto'), value: 'STO' }
 ]
 
 // 页面数据
