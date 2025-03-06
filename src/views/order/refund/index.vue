@@ -42,24 +42,26 @@
           </template>
         </el-table-column>
         <el-table-column prop="createTime" :label="$t('refund.createTime')" width="180" />
-        <el-table-column :label="$t('common.operation')" width="200" fixed="right">
+        <el-table-column :label="$t('common.operation')" width="280" fixed="right">
           <template #default="scope">
-            <el-button 
-              size="small"
-              @click="handleDetail(scope.row)"
-            >{{ $t('common.detail') }}</el-button>
-            <el-button
-              v-if="scope.row.status === 'pending'"
-              size="small"
-              type="success"
-              @click="handleApprove(scope.row)"
-            >{{ $t('refund.approve') }}</el-button>
-            <el-button
-              v-if="scope.row.status === 'pending'"
-              size="small"
-              type="danger"
-              @click="handleReject(scope.row)"
-            >{{ $t('refund.reject') }}</el-button>
+            <div class="operation-buttons">
+              <el-button 
+                size="small"
+                @click="handleDetail(scope.row)"
+              >{{ $t('common.detail') }}</el-button>
+              <el-button
+                v-if="scope.row.status === 'pending'"
+                size="small"
+                type="success"
+                @click="handleApprove(scope.row)"
+              >{{ $t('refund.approve') }}</el-button>
+              <el-button
+                v-if="scope.row.status === 'pending'"
+                size="small"
+                type="danger"
+                @click="handleReject(scope.row)"
+              >{{ $t('refund.reject') }}</el-button>
+            </div>
           </template>
         </el-table-column>
       </el-table>
@@ -312,32 +314,42 @@ onMounted(() => {
 })
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 .refund-container {
   padding: 20px;
-}
 
-.search-bar {
-  margin-bottom: 20px;
-}
+  .search-bar {
+    margin-bottom: 20px;
+  }
 
-.pagination-container {
-  margin-top: 20px;
-  display: flex;
-  justify-content: flex-end;
-}
+  .pagination-container {
+    margin-top: 20px;
+    display: flex;
+    justify-content: flex-end;
+  }
 
-.evidence-image {
-  width: 100px;
-  height: 100px;
-  margin-right: 10px;
-  border-radius: 4px;
-  cursor: pointer;
-}
+  .operation-buttons {
+    display: flex;
+    gap: 4px;  // 设置按钮之间的间距为4px
+    
+    :deep(.el-button) {
+      margin: 0;  // 移除默认的按钮margin
+    }
+  }
 
-.dialog-footer {
-  display: flex;
-  justify-content: flex-end;
-  gap: 10px;
+  .evidence-image {
+    width: 100px;
+    height: 100px;
+    margin-right: 8px;
+    margin-bottom: 8px;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+
+  .dialog-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+  }
 }
 </style> 

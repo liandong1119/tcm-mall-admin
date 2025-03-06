@@ -11,7 +11,7 @@
             <el-option
               v-for="status in ['pending', 'paid', 'shipped', 'completed', 'cancelled', 'refunding']"
               :key="status"
-              :label="$t(`order.status.${status}`)"
+              :label="$t(`order.statuses.${status}`)"
               :value="status"
             />
           </el-select>
@@ -48,7 +48,7 @@
         <el-table-column prop="status" :label="$t('order.status')" width="120">
           <template #default="scope">
             <el-tag :type="getOrderStatusType(scope.row.status)">
-              {{ $t(`order.status.${scope.row.status}`) }}
+              {{ $t(`order.statuses.${scope.row.status}`) }}
             </el-tag>
           </template>
         </el-table-column>
