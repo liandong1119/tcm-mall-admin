@@ -198,7 +198,7 @@ export default {
       yd: '韵达快递',
       sto: '申通快递'
     },
-    status: {
+    statuses: {
       pending: '待付款',
       paid: '待发货',
       shipped: '已发货',

@@ -6,7 +6,7 @@ import './style.css'
 import App from './App.vue'
 import router from './router'
 import pinia from './store'
-import i18n from './i18n'
+import i18n from './locales'
 
 // 导入 ECharts
 import ECharts from 'vue-echarts'

@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import i18n from '@/i18n'
+import i18n from '@/locales'
 import { watch } from 'vue'
 
 const routes = [
