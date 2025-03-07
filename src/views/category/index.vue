@@ -124,9 +124,10 @@ const fetchCategories = async () => {
   loading.value = true
   try {
     const { list, total: totalCount } = await getCategoryList({
-      page: currentPage.value,
+      pageNum: currentPage.value,
       pageSize: pageSize.value
     })
+
     categoryList.value = list
     total.value = totalCount
   } catch (error) {

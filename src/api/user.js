@@ -37,7 +37,7 @@ export function resetUserPassword(id) {
 // 管理员登录
 export function login(data) {
   return request({
-    url: '/admin/login',
+    url: '/seller/login',
     method: 'post',
     data
   })

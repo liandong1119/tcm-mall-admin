@@ -20,11 +20,11 @@ export async function getDashboardData() {
 
 // 商品相关
 export async function getProductList() {
-  await delay()
-  return {
-    total: 100,
-    list: generateProducts()
-  }
+  // await delay()
+  // return {
+  //   total: 100,
+  //   list: generateProducts()
+  // }
 }
 
 export async function getProductDetail(id) {

@@ -3,7 +3,7 @@ import request from '@/utils/request'
 // 获取商品列表
 export function getProductList(params) {
   return request({
-    url: '/products',
+    url: '/products/seller',
     method: 'get',
     params
   })
@@ -46,9 +46,8 @@ export function getProductDetail(id) {
 // 更新商品状态（上架/下架）
 export function updateProductStatus(id, status) {
   return request({
-    url: `/products/${id}/status`,
+    url: `/products/${id}/${status}`,
     method: 'put',
-    data: { status }
   })
 }
 
@@ -62,4 +61,5 @@ export function uploadProductImage(data) {
     },
     data
   })
-} 
+}
+

@@ -83,6 +83,7 @@ export default {
     nicknameLength: 'Nickname length should be 2-20 characters'
   },
   product: {
+    img: 'Product Cover',
     list: 'Product List',
     add: 'Add Product',
     edit: 'Edit Product',

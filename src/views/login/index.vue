@@ -1,123 +1,130 @@
 <template>
-  <div class="login-container">
-    <!-- 左侧海报 -->
-    <div class="login-banner">
-      <img src="@/assets/login-banner.svg" alt="Login Banner">
-      <div class="banner-text">
-        <h1 class="animate__animated animate__fadeInDown">{{ $t('login.systemTitle') }}</h1>
-        <p class="animate__animated animate__fadeInUp animate__delay-1s">{{ $t('login.systemSubtitle') }}</p>
-      </div>
-    </div>
-    
-    <!-- 右侧登录表单 -->
-    <div class="login-content">
-      <div class="login-box animate__animated animate__fadeInRight">
-        <div class="login-header">
-          <img src="@/assets/logo.svg" alt="Logo" class="login-logo animate__animated animate__bounceIn animate__delay-1s">
-          <h2 class="login-title">{{ $t('login.title') }}</h2>
-        </div>
-        
-        <!-- 登录表单 -->
-        <el-form
-          ref="loginFormRef"
-          :model="loginForm"
-          :rules="loginRules"
-          class="login-form"
-          size="large"
-        >
-          <el-form-item prop="username">
-            <el-input
-              v-model="loginForm.username"
-              :placeholder="$t('validate.usernameRequired')"
-              @keyup.enter="handleLogin"
-            >
-              <template #prefix>
-                <el-icon><User /></el-icon>
-              </template>
-            </el-input>
-          </el-form-item>
-          
-          <el-form-item prop="password">
-            <el-input
-              v-model="loginForm.password"
-              type="password"
-              :placeholder="$t('validate.passwordRequired')"
-              show-password
-              @keyup.enter="handleLogin"
-            >
-              <template #prefix>
-                <el-icon><Lock /></el-icon>
-              </template>
-            </el-input>
-          </el-form-item>
-          
-          <el-form-item prop="captcha">
-            <div class="captcha-container">
-              <el-input
-                v-model="loginForm.captcha"
-                :placeholder="$t('login.captcha')"
-                @keyup.enter="handleLogin"
-              >
-                <template #prefix>
-                  <el-icon><Key /></el-icon>
-                </template>
-              </el-input>
-              <img 
-                :src="captchaUrl" 
-                :alt="$t('login.captcha')"
-                class="captcha-img"
-                @click="refreshCaptcha"
-              >
+    <div class="login-container">
+        <!-- 左侧海报 -->
+        <div class="login-banner">
+            <img src="@/assets/login-banner.svg" alt="Login Banner">
+            <div class="banner-text">
+                <h1 class="animate__animated animate__fadeInDown">{{ $t('login.systemTitle') }}</h1>
+                <p class="animate__animated animate__fadeInUp animate__delay-1s">{{ $t('login.systemSubtitle') }}</p>
             </div>
-          </el-form-item>
+        </div>
 
-          <div class="form-operations">
-            <el-checkbox v-model="rememberMe">{{ $t('login.rememberMe') }}</el-checkbox>
-            <el-link type="primary" @click="forgotPassword">{{ $t('login.forgotPassword') }}</el-link>
-          </div>
+        <!-- 右侧登录表单 -->
+        <div class="login-content">
+            <div class="login-box animate__animated animate__fadeInRight">
+                <div class="login-header">
+                    <img src="@/assets/logo.svg" alt="Logo"
+                         class="login-logo animate__animated animate__bounceIn animate__delay-1s">
+                    <h2 class="login-title">{{ $t('login.title') }}</h2>
+                </div>
 
-          <el-form-item>
-            <el-button
-              :loading="loading"
-              type="primary"
-              class="login-button"
-              @click="handleLogin"
-            >
-              <span>{{ $t('login.loginButton') }}</span>
-            </el-button>
-          </el-form-item>
-        </el-form>
+                <!-- 登录表单 -->
+                <el-form
+                        ref="loginFormRef"
+                        :model="loginForm"
+                        :rules="loginRules"
+                        class="login-form"
+                        size="large"
+                >
+                    <el-form-item prop="username">
+                        <el-input
+                                v-model="loginForm.username"
+                                :placeholder="$t('validate.usernameRequired')"
+                                @keyup.enter="handleLogin"
+                        >
+                            <template #prefix>
+                                <el-icon>
+                                    <User/>
+                                </el-icon>
+                            </template>
+                        </el-input>
+                    </el-form-item>
 
-        <!-- 底部语言切换 -->
-        <div class="login-footer">
-          <el-dropdown trigger="click" @command="handleSetLanguage">
+                    <el-form-item prop="password">
+                        <el-input
+                                v-model="loginForm.password"
+                                type="password"
+                                :placeholder="$t('validate.passwordRequired')"
+                                show-password
+                                @keyup.enter="handleLogin"
+                        >
+                            <template #prefix>
+                                <el-icon>
+                                    <Lock/>
+                                </el-icon>
+                            </template>
+                        </el-input>
+                    </el-form-item>
+
+                    <el-form-item prop="captcha">
+                        <div class="captcha-container">
+                            <el-input
+                                    v-model="loginForm.captcha"
+                                    :placeholder="$t('login.captcha')"
+                                    @keyup.enter="handleLogin"
+                            >
+                                <template #prefix>
+                                    <el-icon>
+                                        <Key/>
+                                    </el-icon>
+                                </template>
+                            </el-input>
+                            <img
+                                    :src="captchaUrl"
+                                    :alt="$t('login.captcha')"
+                                    class="captcha-img"
+                                    @click="refreshCaptcha"
+                            >
+                        </div>
+                    </el-form-item>
+
+                    <div class="form-operations">
+                        <el-checkbox v-model="rememberMe">{{ $t('login.rememberMe') }}</el-checkbox>
+                        <el-link type="primary" @click="forgotPassword">{{ $t('login.forgotPassword') }}</el-link>
+                    </div>
+
+                    <el-form-item>
+                        <el-button
+                                :loading="loading"
+                                type="primary"
+                                class="login-button"
+                                @click="handleLogin"
+                        >
+                            <span>{{ $t('login.loginButton') }}</span>
+                        </el-button>
+                    </el-form-item>
+                </el-form>
+
+                <!-- 底部语言切换 -->
+                <div class="login-footer">
+                    <el-dropdown trigger="click" @command="handleSetLanguage">
             <span class="language-switch">
               {{ currentLang === 'zh' ? '中文' : 'English' }}
-              <el-icon class="el-icon--right"><arrow-down /></el-icon>
+              <el-icon class="el-icon--right"><arrow-down/></el-icon>
             </span>
-            <template #dropdown>
-              <el-dropdown-menu>
-                <el-dropdown-item command="zh">中文</el-dropdown-item>
-                <el-dropdown-item command="en">English</el-dropdown-item>
-              </el-dropdown-menu>
-            </template>
-          </el-dropdown>
+                        <template #dropdown>
+                            <el-dropdown-menu>
+                                <el-dropdown-item command="zh">中文</el-dropdown-item>
+                                <el-dropdown-item command="en">English</el-dropdown-item>
+                            </el-dropdown-menu>
+                        </template>
+                    </el-dropdown>
+                </div>
+            </div>
         </div>
-      </div>
     </div>
-  </div>
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
-import { ElMessage } from 'element-plus'
-import { User, Lock, Key, ArrowDown } from '@element-plus/icons-vue'
-import { useI18n } from 'vue-i18n'
-import { login } from '@/api/user'
+import {ref, computed, onMounted} from 'vue'
+import {useRouter} from 'vue-router'
+import {ElMessage} from 'element-plus'
+import {User, Lock, Key, ArrowDown} from '@element-plus/icons-vue'
+import {useI18n} from 'vue-i18n'
+import {login} from '@/api/user'
 import 'animate.css'
 
-const { t, locale } = useI18n()
+const {t, locale} = useI18n()
 const router = useRouter()
 const loginFormRef = ref(null)
 const loading = ref(false)
@@ -126,117 +133,122 @@ const captchaUrl = ref('/api/captcha')
 const rememberMe = ref(false)
 
 const loginForm = ref({
-  username: '',
-  password: '',
-  captcha: ''
+    username: '',
+    password: '',
+    captcha: ''
 })
 
 const loginRules = {
-  username: [
-    { required: true, message: '请输入用户名', trigger: 'blur' },
-    { min: 3, max: 20, message: '用户名长度应为3-20个字符', trigger: 'blur' }
-  ],
-  password: [
-    { required: true, message: '请输入密码', trigger: 'blur' },
-    { min: 6, max: 20, message: '密码长度应为6-20个字符', trigger: 'blur' }
-  ],
-  captcha: [
-    { required: true, message: '请输入验证码', trigger: 'blur' },
-    { len: 4, message: '验证码长度应为4位', trigger: 'blur' }
-  ]
+    username: [
+        {required: true, message: '请输入用户名', trigger: 'blur'},
+        {min: 3, max: 20, message: '用户名长度应为3-20个字符', trigger: 'blur'}
+    ],
+    password: [
+        {required: true, message: '请输入密码', trigger: 'blur'},
+        {min: 6, max: 20, message: '密码长度应为6-20个字符', trigger: 'blur'}
+    ],
+    captcha: [
+        {required: true, message: '请输入验证码', trigger: 'blur'},
+        {len: 4, message: '验证码长度应为4位', trigger: 'blur'}
+    ]
 }
 
 // 模拟验证码图片
 const mockCaptcha = () => {
-  const canvas = document.createElement('canvas')
-  canvas.width = 120
-  canvas.height = 44
-  const ctx = canvas.getContext('2d')
-  
-  // 背景
-  ctx.fillStyle = '#f0f2f5'
-  ctx.fillRect(0, 0, 120, 44)
-  
-  // 随机验证码
-  ctx.font = 'bold 24px Arial'
-  ctx.fillStyle = '#1890ff'
-  ctx.textBaseline = 'middle'
-  const code = '1234'
-  for(let i = 0; i < code.length; i++) {
-    ctx.fillText(code[i], 20 + i * 25, 22)
-  }
-  
-  // 干扰线
-  ctx.strokeStyle = '#1890ff'
-  ctx.lineWidth = 1
-  for(let i = 0; i < 4; i++) {
-    ctx.beginPath()
-    ctx.moveTo(Math.random() * 120, Math.random() * 44)
-    ctx.lineTo(Math.random() * 120, Math.random() * 44)
-    ctx.stroke()
-  }
-  
-  return canvas.toDataURL()
+    const canvas = document.createElement('canvas')
+    canvas.width = 120
+    canvas.height = 44
+    const ctx = canvas.getContext('2d')
+
+    // 背景
+    ctx.fillStyle = '#f0f2f5'
+    ctx.fillRect(0, 0, 120, 44)
+
+    // 随机验证码
+    ctx.font = 'bold 24px Arial'
+    ctx.fillStyle = '#1890ff'
+    ctx.textBaseline = 'middle'
+    const code = '1234'
+    for (let i = 0; i < code.length; i++) {
+        ctx.fillText(code[i], 20 + i * 25, 22)
+    }
+
+    // 干扰线
+    ctx.strokeStyle = '#1890ff'
+    ctx.lineWidth = 1
+    for (let i = 0; i < 4; i++) {
+        ctx.beginPath()
+        ctx.moveTo(Math.random() * 120, Math.random() * 44)
+        ctx.lineTo(Math.random() * 120, Math.random() * 44)
+        ctx.stroke()
+    }
+
+    return canvas.toDataURL()
 }
 
 const handleLogin = () => {
-  if (!loginFormRef.value) return
-  
-  loginFormRef.value.validate(async (valid) => {
-    if (valid) {
-      loading.value = true
-      try {
-        // 模拟登录接口
-        await new Promise(resolve => setTimeout(resolve, 1000))
-        
-        // 模拟返回数据
-        const mockResponse = {
-          token: 'mock_token_123456',
-          username: loginForm.value.username
+    if (!loginFormRef.value) return
+
+    loginFormRef.value.validate(async (valid) => {
+        if (valid) {
+            loading.value = true
+            try {
+                // 模拟登录接口
+                await new Promise(resolve => setTimeout(resolve, 1000))
+                const loginData = {
+                    account: loginForm.value.username,
+                    password: loginForm.value.password,
+                    captcha: loginForm.value.captcha
+                }
+                const {userInfo:userInfo,token} =  await login(loginData)
+                // 模拟返回数据
+                // const mockResponse = {
+                //     token: 'mock_token_123456',
+                //     username: loginForm.value.username
+                // }
+
+                localStorage.setItem('token', token)
+                localStorage.setItem('username', userInfo.username)
+                if (rememberMe.value) {
+                    localStorage.setItem('remember', 'true')
+                    localStorage.setItem('savedUsername', loginForm.value.username)
+                }
+                ElMessage.success('登录成功')
+                router.push('/')
+            } catch (error) {
+                console.error('Login failed:', error)
+                ElMessage.error('登录失败')
+                refreshCaptcha()
+            } finally {
+                loading.value = false
+            }
         }
-        
-        localStorage.setItem('token', mockResponse.token)
-        localStorage.setItem('username', mockResponse.username)
-        if (rememberMe.value) {
-          localStorage.setItem('remember', 'true')
-          localStorage.setItem('savedUsername', loginForm.value.username)
-        }
-        ElMessage.success('登录成功')
-        router.push('/')
-      } catch (error) {
-        console.error('Login failed:', error)
-        ElMessage.error('登录失败')
-        refreshCaptcha()
-      } finally {
-        loading.value = false
-      }
-    }
-  })
+    })
 }
 
 const refreshCaptcha = () => {
-  captchaUrl.value = mockCaptcha()
+    captchaUrl.value = mockCaptcha()
 }
 
 const forgotPassword = () => {
-  ElMessage.info('该功能正在开发中...')
+    ElMessage.info('该功能正在开发中...')
 }
 
 const handleSetLanguage = (lang) => {
-  locale.value = lang
-  localStorage.setItem('locale', lang)
+    locale.value = lang
+    localStorage.setItem('locale', lang)
 }
 
 // 检查是否记住密码
 onMounted(() => {
-  if (localStorage.getItem('remember') === 'true') {
-    const savedUsername = localStorage.getItem('savedUsername')
-    if (savedUsername) {
-      loginForm.value.username = savedUsername
-      rememberMe.value = true
+    if (localStorage.getItem('remember') === 'true') {
+        const savedUsername = localStorage.getItem('savedUsername')
+        if (savedUsername) {
+            loginForm.value.username = savedUsername
+            rememberMe.value = true
+        }
     }
-  }
-  refreshCaptcha()
+    refreshCaptcha()
 })
 </script>
 
@@ -266,7 +278,7 @@ onMounted(() => {
     left: 0;
     right: 0;
     bottom: 0;
-    background: linear-gradient(135deg, rgba(24,144,255,0.1) 0%, rgba(0,21,41,0.1) 100%);
+    background: linear-gradient(135deg, rgba(24, 144, 255, 0.1) 0%, rgba(0, 21, 41, 0.1) 100%);
     z-index: 1;
   }
 
@@ -287,7 +299,7 @@ onMounted(() => {
       font-weight: 600;
       margin-bottom: 16px;
       letter-spacing: 2px;
-      text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
     }
 
     p {
@@ -305,7 +317,7 @@ onMounted(() => {
   justify-content: center;
   padding: 40px;
   position: relative;
-  
+
   &::before {
     content: '';
     position: absolute;
@@ -313,7 +325,7 @@ onMounted(() => {
     right: 0;
     bottom: 0;
     width: 50%;
-    background: linear-gradient(to right, rgba(255,255,255,0), rgba(255,255,255,0.5));
+    background: linear-gradient(to right, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.5));
     z-index: 1;
   }
 }
@@ -325,12 +337,12 @@ onMounted(() => {
   backdrop-filter: blur(10px);
   border-radius: 8px;
   padding: 40px;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
   position: relative;
   z-index: 2;
-  
+
   &:hover {
-    box-shadow: 0 12px 32px rgba(0,0,0,0.15);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.15);
     transform: translateY(-2px);
     transition: all 0.3s ease;
   }
@@ -344,7 +356,7 @@ onMounted(() => {
     width: 70px;
     height: 70px;
     margin-bottom: 20px;
-    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
   }
 
   .login-title {
@@ -362,11 +374,11 @@ onMounted(() => {
 
     .el-input__wrapper {
       padding-left: 15px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
       transition: all 0.3s ease;
-      
+
       &:hover, &.is-focus {
-        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
       }
     }
 
@@ -392,10 +404,10 @@ onMounted(() => {
       border-radius: 4px;
       cursor: pointer;
       transition: all 0.3s ease;
-      
+
       &:hover {
         transform: scale(1.02);
-        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
       }
     }
   }
@@ -405,14 +417,14 @@ onMounted(() => {
     justify-content: space-between;
     align-items: center;
     margin: -10px 0 20px;
-    
+
     :deep(.el-checkbox__label) {
       color: #606266;
     }
-    
+
     .el-link {
       font-size: 14px;
-      
+
       &:hover {
         text-decoration: underline;
       }
@@ -425,10 +437,10 @@ onMounted(() => {
     font-size: 16px;
     letter-spacing: 4px;
     transition: all 0.3s ease;
-    
+
     &:not(.is-loading):hover {
       transform: translateY(-1px);
-      box-shadow: 0 4px 12px rgba(24,144,255,0.3);
+      box-shadow: 0 4px 12px rgba(24, 144, 255, 0.3);
     }
   }
 }
@@ -453,8 +465,8 @@ onMounted(() => {
 
     &:hover {
       color: var(--el-color-primary);
-      background: rgba(24,144,255,0.1);
-      
+      background: rgba(24, 144, 255, 0.1);
+
       .el-icon {
         transform: rotate(180deg);
       }
@@ -479,12 +491,12 @@ onMounted(() => {
 
   .login-content {
     width: 100%;
-    
+
     &::before {
       display: none;
     }
   }
-  
+
   .login-box {
     backdrop-filter: none;
     background: #fff;

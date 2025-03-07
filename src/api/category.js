@@ -3,9 +3,16 @@ import request from '@/utils/request'
 // 获取分类列表
 export function getCategoryList(params) {
   return request({
-    url: '/categories',
+    url: '/categories/page',
     method: 'get',
     params
+  })
+}
+
+export function getAllCategory(){
+  return request({
+    url: '/categories/',
+    method: 'get'
   })
 }
 

@@ -17,7 +17,7 @@ service.interceptors.request.use(
     // 从 localStorage 获取 token
     const token = localStorage.getItem('token')
     if (token) {
-      config.headers['Authorization'] = `Bearer ${token}`
+      config.headers['token'] = `Bearer ${token}`
     }
     return config
   },
@@ -30,14 +30,19 @@ service.interceptors.request.use(
 // 响应拦截器
 service.interceptors.response.use(
   response => {
-    const { code, message, data } = response.data
+    const { code, msg, data } = response.data
 
-    if (code === 0) {
+    if (code === 200) {
       return data
     }
-
-    ElMessage.error(message || 'Error')
-    return Promise.reject(new Error(message || 'Error'))
+    if (code === 1013 || code === 1014|| code === 1002) {
+      ElMessage.error(msg || 'Error')
+      localStorage.removeItem('token')
+      router.push('/login')
+      return
+    }
+    ElMessage.error(msg || 'Error')
+    return Promise.reject(new Error(msg || 'Error'))
   },
   error => {
     if (error.response) {

@@ -128,6 +128,8 @@ export default {
     noReviews: '暂无评价'
   },
   product: {
+    supplier:'供应商',
+    img: '商品封面',
     list: '商品列表',
     add: '添加商品',
     edit: '编辑商品',

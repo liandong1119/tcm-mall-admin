@@ -3,7 +3,7 @@ import request from '@/utils/request'
 // 获取评价列表
 export function getReviewList(params) {
   return request({
-    url: '/reviews',
+    url: '/comment/seller',
     method: 'get',
     params
   })
@@ -12,7 +12,7 @@ export function getReviewList(params) {
 // 回复评价
 export function replyReview(data) {
   return request({
-    url: '/admin/review/reply',
+    url: '/comment/reply',
     method: 'post',
     data
   })

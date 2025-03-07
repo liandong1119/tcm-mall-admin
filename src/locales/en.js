@@ -117,6 +117,8 @@ export default {
     noReviews: 'No Reviews'
   },
   product: {
+    img: 'Product Cover',
+    supplier: 'Supplier',
     list: 'Product List',
     add: 'Add Product',
     edit: 'Edit Product',
@@ -181,7 +183,6 @@ export default {
     createTime: 'Create Time',
     items: 'Items',
     ship: 'Ship',
-    confirmShip: 'Confirm Shipment',
     shipSuccess: 'Shipped Successfully',
     shipTitle: 'Ship Order',
     trackingNo: 'Tracking No.',
@@ -197,12 +198,10 @@ export default {
     completed: 'Completed',
     cancelled: 'Cancelled',
     phone: 'Phone',
-    shipTime: 'Ship Time',
     subtotal: 'Subtotal',
     shipping: 'Shipping Info',
     customerName: 'Customer Name',
     quantity: 'Quantity',
-    shipping: 'Shipping Info',
     shipTime: 'Ship Time',
     confirmShip: 'Are you sure to ship this order?',
     status: {
