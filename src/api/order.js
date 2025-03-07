@@ -3,7 +3,7 @@ import request from '@/utils/request'
 // 获取订单列表
 export function getOrderList(params) {
   return request({
-    url: '/admin/orders',
+    url: '/order/seller/list',
     method: 'get',
     params
   })

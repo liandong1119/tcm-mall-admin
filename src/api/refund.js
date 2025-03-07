@@ -3,7 +3,7 @@ import request from '@/utils/request'
 // 获取退款列表
 export function getRefundList(params) {
   return request({
-    url: '/admin/refunds',
+    url: '/order/refund/list',
     method: 'get',
     params
   })
