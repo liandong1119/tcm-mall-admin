@@ -184,8 +184,8 @@ export default {
     saveFailed: '保存失败'
   },
   order: {
-    orderNo: '订单编号',
     status: '订单状态',
+    orderNo: '订单编号',
     amount: '订单金额',
     customer: '客户',
     createTime: '创建时间',
@@ -200,7 +200,7 @@ export default {
       yd: '韵达快递',
       sto: '申通快递'
     },
-    status: {
+    statuses: {
       pending: '待付款',
       paid: '待发货',
       shipped: '已发货',

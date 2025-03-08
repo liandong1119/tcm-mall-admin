@@ -17,20 +17,20 @@ export function getRefundDetail(id) {
   })
 }
 
-// 处理退款申请
-export function handleRefund(id, data) {
+// 同意退款申请
+export function handleRefund(data) {
   return request({
-    url: `/admin/refunds/${id}/handle`,
-    method: 'post',
+    url: `/order/refund/accept`,
+    method: 'put',
     data
   })
 }
 
 // 拒绝退款申请
-export function rejectRefund(id, data) {
+export function rejectRefund(data) {
   return request({
-    url: `/admin/refunds/${id}/reject`,
-    method: 'post',
+    url: `/order/refund/refuse`,
+    method: 'put',
     data
   })
 } 

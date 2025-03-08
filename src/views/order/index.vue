@@ -7,12 +7,11 @@
                 </el-form-item>
                 <el-form-item :label="$t('order.status')">
                     <el-select v-model="searchForm.status" :placeholder="$t('common.all')">
-                        <el-option :label="$t('common.all')" value=""/>
                         <el-option
-                                v-for="status in ['pending', 'paid', 'shipped', 'completed', 'cancelled', 'refunding']"
-                                :key="status"
-                                :label="$t(`order.status.${status}`)"
-                                :value="status"
+                            v-for="status in orderStatuses"
+                            :key="status.numVal"
+                            :label="status.label"
+                            :value="status.numVal"
                         />
                     </el-select>
                 </el-form-item>
@@ -48,7 +47,7 @@
                 <el-table-column prop="status" :label="$t('order.status')" width="120">
                     <template #default="scope">
                         <el-tag :type="getOrderStatusType(scope.row.status)">
-                            {{ $t(`order.status.${scope.row.status}`) }}
+                            {{ $t(`order.statuses.${scope.row.status}`) }}
                         </el-tag>
                     </template>
                 </el-table-column>
@@ -91,7 +90,7 @@ import {ref, onMounted} from 'vue'
 import {useRouter} from 'vue-router'
 import {useI18n} from 'vue-i18n'
 import {ElMessage, ElMessageBox} from 'element-plus'
-import {getOrderList} from "@/api/order.js";
+import {getOrderList, shipOrder} from "@/api/order.js";
 
 const {t} = useI18n()
 const router = useRouter()
@@ -121,16 +120,45 @@ const getOrderStatusType = (status) => {
     return types[status] || 'info'
 }
 
+// 订单状态
+const orderStatuses = [
+    {value: 'all', label: t('common.all'),numVal: ''},
+    {value: 'pending', label: t('order.statuses.pending'),numVal: 0},
+    {value: 'paid', label: t('order.statuses.paid'),numVal: 1  },
+    {value: 'shipped', label: t('order.statuses.shipped'),numVal: 2},
+    {value: 'completed', label: t('order.statuses.completed'),numVal: 4},
+    {value: 'cancelled', label: t('order.statuses.cancelled'),numVal: 5},
+    {value: 'refunding', label: t('order.statuses.refunding'),numVal: 6},
+    {value: 'refunded', label: t('order.statuses.refunded'),numVal: 7},
+]
+
+
+const statusMap = {
+    0: "pending",
+    1: "paid",
+    2: "shipped",
+    4: "completed",
+    5: "cancelled",
+    6: "refunding",
+    7: "refunded",
+    // 其他状态的映射
+}
+
+
 const fetchData = async () => {
     loading.value = true
     try {
         const pageRequest = {
             pageNum: currentPage.value,
             pageSize: pageSize.value,
-            orderCode: searchForm.orderNo,
-            status: searchForm.status
+            orderCode: searchForm.value.orderNo,
+            status: searchForm.value.status
         }
+        console.log("分页参数：：",pageRequest)
         const {total: totalCount, list} = await getOrderList(pageRequest)
+        list.forEach((order) => {
+            order.status = statusMap[order.status]
+        })
         orderList.value = list
         total.value = totalCount
     } catch (error) {
@@ -169,7 +197,7 @@ const handleShip = (row) => {
         }
     ).then(async () => {
         try {
-            await handleSuccess()
+            await shipOrder(row.id)
             ElMessage.success(t('order.shipSuccess'))
             fetchData()
         } catch (error) {
@@ -193,7 +221,12 @@ onMounted(() => {
 })
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
+// 调整el-select宽度
+.el-select {
+    --el-select-width: 150px !important;
+}
+
 .order-list {
     padding: 20px;
 }

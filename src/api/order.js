@@ -26,12 +26,15 @@ export function updateOrderStatus(id, status) {
   })
 }
 
-// 发货
-export function shipOrder(id, data) {
+/**
+ * 商家处理一个订单，对一个订单进行发货的操作。
+ * @param id
+ * @returns {*}
+ */
+export function shipOrder(id) {
   return request({
-    url: `/admin/orders/${id}/ship`,
-    method: 'post',
-    data
+    url: `/order/deliver/${id}`,
+    method: 'put',
   })
 }
 

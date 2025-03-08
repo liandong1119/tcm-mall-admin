@@ -331,7 +331,11 @@ const fetchCategories = async () => {
 
 // 处理文件删除
 const handleRemove = async (file, fileList) => {
+
     deletePhoto([file.fileId])
+    // 移除
+    // 删除的时候还要从数组中移除
+    reviewForm.value.photoIds = reviewForm.value.photoIds.filter(id => id !== file.fileId)
 }
 
 // 上传相关方法

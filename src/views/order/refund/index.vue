@@ -89,13 +89,13 @@
         >
             <el-descriptions :column="2" border>
                 <el-descriptions-item :label="$t('order.orderNo')">
-                    {{ currentRefund.orderNo }}
+                    {{ currentRefund.orderCode }}
                 </el-descriptions-item>
                 <el-descriptions-item :label="$t('refund.amount')">
-                    ¥{{ currentRefund.amount?.toFixed(2) }}
+                    ¥{{ currentRefund.orderAmount?.toFixed(2) }}
                 </el-descriptions-item>
                 <el-descriptions-item :label="$t('merchant.name')">
-                    {{ currentRefund.merchantName }}
+                    {{ currentRefund.productName }}
                 </el-descriptions-item>
                 <el-descriptions-item :label="$t('refund.status')">
                     <el-tag :type="getStatusType(currentRefund.status)">
@@ -166,27 +166,16 @@
 import {ref, onMounted} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {ElMessage, ElMessageBox} from 'element-plus'
-import {getRefundList} from "@/api/refund.js";
+import {getRefundList, handleRefund, rejectRefund} from "@/api/refund.js";
 
 const {t} = useI18n()
 
-// 退款状态
-/*
-const refundStatus = {
-    pending: t('refund.pending'),
-    approved: t('refund.approved'),
-    rejected: t('refund.rejected'),
-    completed: t('refund.completed')
-}
-*/
-
 // 订单状态
 const refundStatus = [
-    {value: 'all', label: t('common.all'),numVal: ''},
-    {value: 'pending', label: t('order.statuses.pending'),numVal: 0},
-    {value: 'approved', label: t('order.statuses.paid'),numVal: 1  },
-    {value: 'rejected', label: t('order.statuses.shipped'),numVal: 2},
-    {value: 'completed', label: t('order.statuses.completed'),numVal: 3}
+    {value: 'pending', label: t('refund.pending'),numVal: 0},
+    {value: 'approved', label: t('refund.approved'),numVal: 1  },
+    {value: 'rejected', label: t('refund.rejected'),numVal: 2},
+    {value: 'completed', label: t('refund.completed'),numVal: 3}
 ]
 // 列表相关
 const loading = ref(false)
@@ -232,10 +221,11 @@ const fetchRefunds = async () => {
         const pageRequest = {
             pageNum: currentPage.value,
             pageSize: pageSize.value,
-
+            orderCode: searchForm.value.orderNo,
+            status: searchForm.value.status
         }
         const {list, total: totalCount} = await getRefundList(pageRequest)
-        list.forEach((order) => {
+         list.forEach((order) => {
             order.status = statusMap[order.status]
         })
         refundList.value = list
@@ -289,7 +279,7 @@ const handleDetail = (row) => {
     detailDialogVisible.value = true
 }
 
-const handleApprove = (row) => {
+const handleApprove = (orderRefund) => {
     ElMessageBox.confirm(
         t('refund.confirmApprove'),
         t('common.warning'),
@@ -300,7 +290,12 @@ const handleApprove = (row) => {
         }
     ).then(async () => {
         try {
-            await handleSuccess()
+            const refundRequest = {
+                refundId: orderRefund.id,
+                goodsId: orderRefund.productId,
+                orderCode: orderRefund.orderCode
+            }
+            await handleRefund(refundRequest)
             ElMessage.success(t('message.approveSuccess'))
             fetchRefunds()
         } catch (error) {
@@ -322,7 +317,14 @@ const confirmReject = async () => {
         if (valid) {
             submitting.value = true
             try {
-                await handleSuccess()
+                // TODO 处理退款操作
+                const refundRequest = {
+                    refundId: currentRefund.value.id,
+                    refuseReason: rejectForm.value.reason,
+                    goodsId: currentRefund.value.productId,
+                    orderCode: currentRefund.value.orderCode
+                }
+                await rejectRefund(refundRequest);
                 ElMessage.success(t('message.rejectSuccess'))
                 rejectDialogVisible.value = false
                 fetchRefunds()
@@ -340,9 +342,9 @@ onMounted(() => {
 })
 </script>
 
-<style scoped>
+<style lang="scss" scoped >
 
-// 调整el-select宽度
+//调整el-select宽度
 .el-select {
     --el-select-width: 150px !important;
 }
