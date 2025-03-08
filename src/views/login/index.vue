@@ -56,11 +56,11 @@
                         </el-input>
                     </el-form-item>
 
-                    <el-form-item prop="captcha">
+                    <el-form-item prop="verifyCode">
                         <div class="captcha-container">
                             <el-input
-                                    v-model="loginForm.captcha"
-                                    :placeholder="$t('login.captcha')"
+                                    v-model="loginForm.verifyCode"
+                                    :placeholder="$t('login.verifyCode')"
                                     @keyup.enter="handleLogin"
                             >
                                 <template #prefix>
@@ -123,19 +123,22 @@ import {User, Lock, Key, ArrowDown} from '@element-plus/icons-vue'
 import {useI18n} from 'vue-i18n'
 import {login} from '@/api/user'
 import 'animate.css'
+import {getPictureVerifyCode} from "@/api/login.js";
 
 const {t, locale} = useI18n()
 const router = useRouter()
 const loginFormRef = ref(null)
 const loading = ref(false)
 const currentLang = computed(() => locale.value)
-const captchaUrl = ref('/api/captcha')
+const captchaUrl = ref('')
 const rememberMe = ref(false)
 
 const loginForm = ref({
     username: '',
     password: '',
-    captcha: ''
+    verifyCode: '',
+    pictureUUID:'',
+    verifyType:3,
 })
 
 const loginRules = {
@@ -152,40 +155,6 @@ const loginRules = {
         {len: 4, message: '验证码长度应为4位', trigger: 'blur'}
     ]
 }
-
-// 模拟验证码图片
-const mockCaptcha = () => {
-    const canvas = document.createElement('canvas')
-    canvas.width = 120
-    canvas.height = 44
-    const ctx = canvas.getContext('2d')
-
-    // 背景
-    ctx.fillStyle = '#f0f2f5'
-    ctx.fillRect(0, 0, 120, 44)
-
-    // 随机验证码
-    ctx.font = 'bold 24px Arial'
-    ctx.fillStyle = '#1890ff'
-    ctx.textBaseline = 'middle'
-    const code = '1234'
-    for (let i = 0; i < code.length; i++) {
-        ctx.fillText(code[i], 20 + i * 25, 22)
-    }
-
-    // 干扰线
-    ctx.strokeStyle = '#1890ff'
-    ctx.lineWidth = 1
-    for (let i = 0; i < 4; i++) {
-        ctx.beginPath()
-        ctx.moveTo(Math.random() * 120, Math.random() * 44)
-        ctx.lineTo(Math.random() * 120, Math.random() * 44)
-        ctx.stroke()
-    }
-
-    return canvas.toDataURL()
-}
-
 const handleLogin = () => {
     if (!loginFormRef.value) return
 
@@ -193,19 +162,15 @@ const handleLogin = () => {
         if (valid) {
             loading.value = true
             try {
-                // 模拟登录接口
-                await new Promise(resolve => setTimeout(resolve, 1000))
+                // 处理登录
                 const loginData = {
                     account: loginForm.value.username,
                     password: loginForm.value.password,
-                    captcha: loginForm.value.captcha
+                    verifyCode: loginForm.value.verifyCode,
+                    pictureUUID: loginForm.value.pictureUUID,
+                    verifyType: loginForm.value.verifyType
                 }
                 const {userInfo:userInfo,token} =  await login(loginData)
-                // 模拟返回数据
-                // const mockResponse = {
-                //     token: 'mock_token_123456',
-                //     username: loginForm.value.username
-                // }
 
                 localStorage.setItem('token', token)
                 localStorage.setItem('username', userInfo.username)
@@ -226,8 +191,10 @@ const handleLogin = () => {
     })
 }
 
-const refreshCaptcha = () => {
-    captchaUrl.value = mockCaptcha()
+const refreshCaptcha = async () => {
+    const {code,imgUrl}  = await getPictureVerifyCode()
+    captchaUrl.value = imgUrl
+    loginForm.value.pictureUUID = code
 }
 
 const forgotPassword = () => {
