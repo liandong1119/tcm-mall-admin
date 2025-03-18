@@ -166,9 +166,8 @@ const handleLogin = () => {
                 const loginData = {
                     account: loginForm.value.username,
                     password: loginForm.value.password,
-                    verifyCode: loginForm.value.verifyCode,
+                    chaptchaCode: loginForm.value.verifyCode,
                     pictureUUID: loginForm.value.pictureUUID,
-                    verifyType: loginForm.value.verifyType
                 }
                 const {userInfo:userInfo,token} =  await login(loginData)
 
