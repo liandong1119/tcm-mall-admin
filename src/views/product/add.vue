@@ -104,10 +104,10 @@
                 <el-form-item :label="$t('product.origin')" prop="origin">
                     <el-input v-model="form.origin"/>
                 </el-form-item>
-
+<!-- 
                 <el-form-item :label="$t('product.weight')" prop="weight">
                     <el-input v-model="form.weight"/>
-                </el-form-item>
+                </el-form-item> -->
 
                 <el-form-item :label="$t('product.efficacy')" prop="efficacy">
                     <el-input

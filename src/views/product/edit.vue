@@ -51,18 +51,18 @@
                     />
                 </el-form-item>
 
-                <el-form-item :label="$t('product.img')" prop="images">
+                <el-form-item :label="$t('product.img')" prop="img">
                     <el-upload
                         :limit="1"
                         :show-file-list="true"
                         v-model:file-list="imgList"
                         :action="uploadUrl"
-                        :on-remove="handleRemove"
                         :headers="uploadHeaders"
                         list-type="picture-card"
                         :on-success="handleCoverUploadSuccess"
                         :on-error="handleUploadError"
                         :before-upload="beforeUpload"
+                        :on-remove="handleRemove"
                     >
                         <el-icon>
                             <Plus/>
@@ -70,7 +70,7 @@
                     </el-upload>
                 </el-form-item>
 
-                <el-form-item :label="$t('product.images')" prop="images">
+                <el-form-item :label="$t('product.images')" prop="photos">
                     <el-upload
                             v-model:file-list="fileList"
                             :action="uploadUrl"
@@ -95,6 +95,38 @@
                     />
                 </el-form-item>
 
+                <el-form-item :label="$t('product.brand')" prop="brand">
+                    <el-input v-model="form.brand"/>
+                </el-form-item>
+
+                <el-form-item :label="$t('product.supplier')" prop="supplier">
+                    <el-input v-model="form.supplier"/>
+                </el-form-item>
+
+                <el-form-item :label="$t('product.origin')" prop="origin">
+                    <el-input v-model="form.origin"/>
+                </el-form-item>
+
+                <!-- <el-form-item :label="$t('product.weight')" prop="weight">
+                    <el-input v-model="form.weight"/>
+                </el-form-item> -->
+
+                <el-form-item :label="$t('product.efficacy')" prop="efficacy">
+                    <el-input
+                            v-model="form.efficacy"
+                            type="textarea"
+                            :rows="3"
+                    />
+                </el-form-item>
+
+                <el-form-item :label="$t('product.precautions')" prop="precautions">
+                    <el-input
+                            v-model="form.precautions"
+                            type="textarea"
+                            :rows="3"
+                    />
+                </el-form-item>
+
                 <!-- 规格管理 -->
                 <el-divider content-position="left">{{ $t('product.specifications') }}</el-divider>
                 <div class="specifications-container">
@@ -113,10 +145,10 @@
                                 <el-input v-model="option.value" :placeholder="$t('product.optionValue')"/>
                                 <el-input-number v-model="option.price_increment"
                                                  :placeholder="$t('product.priceIncrement')" :min="-1000" :max="1000"/>
-                                <el-button type="danger" @click="removeOption(specIndex, optionIndex)" icon="Delete"
+                                <el-button type="danger" @click="removeOption(spec, optionIndex)" icon="Delete"
                                            circle/>
                             </div>
-                            <el-button type="primary" @click="addOption(specIndex)" icon="Plus">
+                            <el-button type="primary" @click="addOption(spec)" icon="Plus">
                                 {{ $t('product.addOption') }}
                             </el-button>
                         </div>
@@ -174,14 +206,27 @@
                         <el-table-column :label="$t('product.image')" width="200">
                             <template #default="{ row }">
                                 <el-select v-model="row.image" :placeholder="$t('product.selectImage')">
+                                    <!-- 添加主图作为选项 -->
                                     <el-option
-                                            v-for="(image, index) in form.images"
-                                            :key="index"
-                                            :label="`${$t('product.image')} ${index + 1}`"
-                                            :value="image"
+                                            v-if="form.img"
+                                            key="main-image"
+                                            :label="$t('product.mainImage')"
+                                            :value="form.img"
                                     >
                                         <div class="image-option">
-                                            <el-image :src="image" style="width: 50px; height: 50px;" fit="cover"/>
+                                            <el-image :src="form.img" style="width: 50px; height: 50px;" fit="cover"/>
+                                            <span>{{ $t('product.mainImage') }}</span>
+                                        </div>
+                                    </el-option>
+                                    <!-- 添加商品图片作为选项 -->
+                                    <el-option
+                                            v-for="(url, index) in form.images"
+                                            :key="'product-image-' + index"
+                                            :label="`${$t('product.image')} ${index + 1}`"
+                                            :value="url"
+                                    >
+                                        <div class="image-option">
+                                            <el-image :src="url" style="width: 50px; height: 50px;" fit="cover"/>
                                             <span>{{ $t('product.image') }} {{ index + 1 }}</span>
                                         </div>
                                     </el-option>
@@ -226,6 +271,7 @@ import {ElMessage} from 'element-plus'
 import {Plus} from '@element-plus/icons-vue'
 import {getProductDetail, updateProduct} from '@/api/product'
 import {getAllCategory, getCategoryList} from '@/api/category'
+import {deletePhoto} from '@/api/photo'
 
 const {t} = useI18n()
 const router = useRouter()
@@ -237,6 +283,7 @@ const categories = ref([])
 const fileList = ref([])
 // 商品的封面
 const imgList = ref([])
+const imageIndexMap = ref(new Map()) // 用于存储图片URL和索引的映射
 
 // 上传相关配置
 const uploadUrl = import.meta.env.VITE_APP_UPLOAD_URL
@@ -246,23 +293,23 @@ const uploadHeaders = {
 
 const form = ref({
     img: '', // 商品的封面图,
-    images: [], // 用于商品的SKU时候的选择
+    photos: '',
     name: '',
     categoryId: '',
     price: 0,
-    original_price: 0,
     stock: 0,
-    photoIds: [],
     description: '',
-    functions: '',
-    efficacy: '',
-    precautions: '',
     brand: '',
+    supplier: '',
     origin: '',
     weight: '',
+    efficacy: '',
+    precautions: '',
     status: 1,
     specifications: [],
-    skus: []
+    skus: [],
+    images: [], // 存储图片URL列表，用于SKU选择
+    photoIds: [] // 存储图片ID列表
 })
 
 const rules = {
@@ -273,13 +320,10 @@ const rules = {
     categoryId: [
         {required: true, message: t('validate.categoryRequired'), trigger: 'change'}
     ],
-    price: [
-        {required: true, message: t('validate.priceRequired'), trigger: 'blur'}
+    img: [
+        {required: true, message: t('validate.imagesRequired'), trigger: 'change'}
     ],
-    stock: [
-        {required: true, message: t('validate.stockRequired'), trigger: 'blur'}
-    ],
-    images: [
+    photos: [
         {required: true, message: t('validate.imagesRequired'), trigger: 'change'}
     ],
     description: [
@@ -302,28 +346,65 @@ const fetchProductDetail = async () => {
     loading.value = true
     try {
         const data = await getProductDetail(route.params.id)
-        data.specifications = JSON.parse(data.specifications)
-        data.skus.forEach(sku => {
-            sku.specs = JSON.parse(sku.specs)
-        })
-
-
-        form.value = data
-
-        // TODO 填充封面和商品图片
-        imgList.value = [{uid:data.img, url:data.img}]
-        // 其他的图片
-        console.log(data)
-        data.photoIds.forEach(id => {
-            form.value.images.push(id)
-        })
-        // 确保规格和SKU数组存在
-        if (!form.value.specifications) {
-            form.value.specifications = []
+        
+        // 处理规格数据
+        if (data.specifications) {
+            data.specifications = JSON.parse(data.specifications)
+        } else {
+            data.specifications = []
+        }
+        
+        // 处理SKU数据
+        if (data.skus && data.skus.length > 0) {
+            data.skus.forEach(sku => {
+                if (typeof sku.specs === 'string') {
+                    sku.specs = JSON.parse(sku.specs)
+                } else if (!sku.specs) {
+                    sku.specs = {}
+                }
+            })
+        } else {
+            data.skus = []
         }
 
-        if (!form.value.skus) {
-            form.value.skus = []
+        // 填充到表单中
+        form.value = {
+            ...data,
+            specifications: data.specifications,
+            skus: data.skus
+        }
+
+        // 处理主图
+        if (data.img) {
+            imgList.value = [{
+                uid: data.img,
+                url: data.img,
+                name: '主图'
+            }]
+        }
+
+        // 处理商品图片
+        if (data.photos && data.photoUrl && data.photoUrl.length > 0) {
+            // 解析photos字段，获取图片ID列表
+            const photoIds = data.photos.split(',').filter(id => id);
+            form.value.photoIds = photoIds;
+            
+            // 创建图片ID和URL的映射
+            const imageFiles = [];
+            data.photoUrl.forEach((url, index) => {
+                if (index < photoIds.length) {
+                    imageFiles.push({
+                        uid: photoIds[index], // 使用实际的图片ID
+                        url: url,
+                        name: `商品图片${index + 1}`
+                    });
+                }
+            });
+            
+            fileList.value = imageFiles;
+            
+            // 存储图片URL列表用于SKU选择
+            form.value.images = data.photoUrl;
         }
 
         // 如果没有规格但有基本信息，创建一个默认SKU
@@ -333,14 +414,14 @@ const fetchProductDetail = async () => {
                 specs: {},
                 price: form.value.price,
                 stock: form.value.stock,
-                image: form.value.images[0] || ''
-            })
+                image: form.value.img || ''
+            });
         }
     } catch (error) {
-        console.error('Failed to fetch product detail:', error)
-        ElMessage.error(t('message.fetchFailed'))
+        console.error('Failed to fetch product detail:', error);
+        ElMessage.error(t('message.fetchFailed'));
     } finally {
-        loading.value = false
+        loading.value = false;
     }
 }
 
@@ -360,18 +441,64 @@ const beforeUpload = (file) => {
     return true
 }
 
+const handleCoverUploadSuccess = (response, uploadFile) => {
+    // 处理回填
+    uploadFile.fileId = response.data.id;
+    form.value.img = response.data.addr;
+    ElMessage.success(t('message.uploadSuccess'));
+}
+
 const handleUploadSuccess = (response, uploadFile) => {
-    form.value.images.push(response.url)
+    const {id: fileId, addr} = response.data;
+    uploadFile.fileId = fileId;
+    form.value.photoIds.push(fileId);
+    form.value.images.push(addr);
+    
+    // 更新photos字段
+    form.value.photos = form.value.photoIds.join(',') + ',';
+    ElMessage.success(t('message.uploadSuccess'));
 }
 
 const handleUploadError = () => {
     ElMessage.error(t('message.uploadFailed'))
 }
 
-const handleRemove = (file) => {
-    const index = form.value.images.indexOf(file.url)
-    if (index > -1) {
-        form.value.images.splice(index, 1)
+const handleRemove = async (file) => {
+    // 确定要删除的图片ID
+    const imageId = file.uid || file.fileId;
+    console.log(imageId)
+    
+    try {
+        // 调用删除图片API
+        await deletePhoto([imageId]);
+        
+        if (file.url === form.value.img) {
+            // 如果是主图
+            form.value.img = '';
+            imgList.value = [];
+        } else {
+            // 如果是商品图片
+            // 从photoIds列表中移除
+            form.value.photoIds = form.value.photoIds.filter(id => id !== imageId);
+            // 更新photos字段
+            form.value.photos = form.value.photoIds.join(',') + ',';
+            
+            // 找到图片在fileList中的索引
+            const fileIndex = fileList.value.findIndex(item => item.uid === imageId);
+            if (fileIndex !== -1) {
+                // 从URL列表中移除对应的URL
+                const imageURL = fileList.value[fileIndex].url;
+                const urlIndex = form.value.images.indexOf(imageURL);
+                if (urlIndex !== -1) {
+                    form.value.images.splice(urlIndex, 1);
+                }
+            }
+        }
+        
+        ElMessage.success(t('message.deleteSuccess'));
+    } catch (error) {
+        console.error('删除图片失败:', error);
+        ElMessage.error(t('message.deleteFailed'));
     }
 }
 
@@ -394,11 +521,8 @@ const submitForm = async () => {
                         }))
                     }))),
                     skus: form.value.skus.map(sku => ({
-
-                        specs: JSON.stringify(sku.specs),
-                        image: sku.image,
-                        price: Number(sku.price),
-                        stock: Number(sku.stock)
+                        ...sku,
+                        specs: JSON.stringify(sku.specs)
                     }))
                 }
 
@@ -443,8 +567,8 @@ const removeSpec = (specIndex) => {
     })
 }
 
-const addOption = (specIndex) => {
-    form.value.specifications[specIndex].options.push({
+const addOption = (spec) => {
+    spec.options.push({
         text: '',
         value: '',
         price_increment: 0,
@@ -452,8 +576,8 @@ const addOption = (specIndex) => {
     })
 }
 
-const removeOption = (specIndex, optionIndex) => {
-    form.value.specifications[specIndex].options.splice(optionIndex, 1)
+const removeOption = (spec, index) => {
+    spec.options.splice(index, 1)
 }
 
 // SKU管理相关方法
@@ -463,7 +587,7 @@ const addSku = () => {
         specs: {},
         price: form.value.price,
         stock: form.value.stock,
-        image: form.value.images[0] || ''
+        image: form.value.img || ''
     }
 
     // 为每个规格添加默认值
@@ -528,7 +652,7 @@ const generateSkus = () => {
     // 创建SKU
     const basePrice = form.value.price
     const baseStock = form.value.stock
-    const defaultImage = form.value.images[0] || ''
+    const defaultImage = form.value.img || ''
 
     // 清空现有SKU
     form.value.skus = []
