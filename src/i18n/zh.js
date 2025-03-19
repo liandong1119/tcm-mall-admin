@@ -134,6 +134,49 @@ export default {
     deleteSuccess: '删除成功',
     deleteFailed: '删除失败',
     saveSuccess: '保存成功',
-    saveFailed: '保存失败'
+    saveFailed: '保存失败',
+    supplier: '供应商',
+    supplierRequired: '请选择供应商'
+  },
+  supplier: {
+    list: '供应商列表',
+    add: '添加供应商',
+    edit: '编辑供应商',
+    detail: '供应商详情',
+    name: '供应商名称',
+    contactName: '联系人',
+    contactPhone: '联系电话',
+    contactEmail: '联系邮箱',
+    address: '地址',
+    description: '描述',
+    status: '状态',
+    createTime: '创建时间',
+    updateTime: '更新时间',
+    searchName: '搜索供应商名称',
+    confirmDelete: '确认删除此供应商？',
+    status: {
+      active: '启用',
+      inactive: '禁用'
+    },
+    validate: {
+      contactNameRequired: '请输入联系人姓名',
+      contactPhoneRequired: '请输入联系电话',
+      contactEmailRequired: '请输入联系邮箱'
+    }
+  },
+  menu: {
+    dashboard: '仪表盘',
+    product: '商品管理',
+    productList: '商品列表',
+    category: '商品分类',
+    order: '订单管理',
+    orderList: '订单列表',
+    refund: '退款管理',
+    user: '用户管理',
+    merchant: '商家管理',
+    supplier: '供应商管理',
+    supplierList: '供应商列表',
+    review: '评价管理',
+    profile: '个人中心'
   }
 } 

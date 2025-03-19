@@ -138,6 +138,49 @@ export default {
     deleteSuccess: 'Delete Successful',
     deleteFailed: 'Delete Failed',
     saveSuccess: 'Save Successful',
-    saveFailed: 'Save Failed'
+    saveFailed: 'Save Failed',
+    supplier: 'Supplier',
+    supplierRequired: 'Please select a supplier'
+  },
+  supplier: {
+    list: 'Supplier List',
+    add: 'Add Supplier',
+    edit: 'Edit Supplier',
+    detail: 'Supplier Detail',
+    name: 'Supplier Name',
+    contactName: 'Contact Person',
+    contactPhone: 'Contact Phone',
+    contactEmail: 'Contact Email',
+    address: 'Address',
+    description: 'Description',
+    status: 'Status',
+    createTime: 'Create Time',
+    updateTime: 'Update Time',
+    searchName: 'Search Supplier Name',
+    confirmDelete: 'Confirm delete this supplier?',
+    status: {
+      active: 'Active',
+      inactive: 'Inactive'
+    },
+    validate: {
+      contactNameRequired: 'Please enter contact name',
+      contactPhoneRequired: 'Please enter contact phone',
+      contactEmailRequired: 'Please enter contact email'
+    }
+  },
+  menu: {
+    dashboard: 'Dashboard',
+    product: 'Products',
+    productList: 'Product List',
+    category: 'Categories',
+    order: 'Orders',
+    orderList: 'Order List',
+    refund: 'Refunds',
+    user: 'Users',
+    merchant: 'Merchants',
+    supplier: 'Suppliers',
+    supplierList: 'Supplier List',
+    review: 'Reviews',
+    profile: 'Profile'
   }
 } 

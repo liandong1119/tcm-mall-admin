@@ -20,6 +20,7 @@ export default {
     detail: '详情',
     close: '关闭',
     tips: '提示',
+    actions: '操作',
     fullscreen: '全屏',
     exitFullscreen: '退出全屏',
     size: '布局大小',
@@ -67,6 +68,8 @@ export default {
     productList: '商品列表',
     category: '分类管理',
     order: '订单管理',
+    supplier: '供应商管理',
+    supplierList: '供应商列表',
     orderList: '订单列表',
     refund: '退款管理',
     review: '评价管理',
@@ -345,6 +348,8 @@ export default {
     systemSubtitle: 'Traditional Chinese Medicine Mall Management System',
     remember: '记住密码',
     forgot: '忘记密码',
+    verifyCode: '验证码',
+    verifyCodePlaceholder: '请输入验证码',
     submit: '登录',
     usernameRequired: '请输入用户名',
     passwordRequired: '请输入密码'
@@ -398,5 +403,31 @@ export default {
     min: '输入值不能小于{min}',
     maxLength: '长度不能超过{max}个字符',
     minLength: '长度不能少于{min}个字符'
-  }
+  },
+  supplier: {
+    list: '供应商列表',
+    add: '添加供应商',
+    edit: '编辑供应商',
+    detail: '供应商详情',
+    name: '供应商名称',
+    contactName: '联系人',
+    contactPhone: '联系电话',
+    contactEmail: '联系邮箱',
+    address: '地址',
+    description: '描述',
+    statusName: '状态',
+    createTime: '创建时间',
+    updateTime: '更新时间',
+    searchName: '搜索供应商名称',
+    confirmDelete: '确认删除此供应商？',
+    status: {
+      active: '启用',
+      inactive: '禁用'
+    },
+    validate: {
+      contactNameRequired: '请输入联系人姓名',
+      contactPhoneRequired: '请输入联系电话',
+      contactEmailRequired: '请输入联系邮箱'
+    }
+  },
 }

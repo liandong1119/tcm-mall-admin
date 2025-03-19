@@ -97,7 +97,41 @@
                     <el-input v-model="form.brand"/>
                 </el-form-item>
 
-                <el-form-item :label="$t('product.supplier')" prop="origin">
+                <el-form-item :label="$t('product.supplier')" prop="supplierId">
+                    <el-select 
+                        v-model="form.supplierId" 
+                        filterable 
+                        remote 
+                        :remote-method="searchSuppliers"
+                        :loading="suppliersLoading"
+                        placeholder="请选择供应商"
+                        class="w-100"
+                    >
+                        <el-option
+                            v-for="item in supplierOptions"
+                            :key="item.id"
+                            :label="item.name"
+                            :value="item.id"
+                        >
+                            <div class="supplier-option">
+                                <span>{{ item.name }}</span>
+                                <small v-if="item.contactName">
+                                    ({{ item.contactName }}: {{ item.contactPhone }})
+                                </small>
+                            </div>
+                        </el-option>
+                    </el-select>
+                    <div class="supplier-actions">
+                        <el-button link type="primary" @click="loadAllSuppliers">
+                            加载全部供应商
+                        </el-button>
+                        <el-button link type="success" @click="addNewSupplier">
+                            新增供应商
+                        </el-button>
+                    </div>
+                </el-form-item>
+
+                <el-form-item :label="$t('product.supplier')" prop="supplier">
                     <el-input v-model="form.supplier"/>
                 </el-form-item>
 
@@ -259,6 +293,7 @@ import {Plus} from '@element-plus/icons-vue'
 import {addProduct} from '@/api/product'
 import {getAllCategory} from '@/api/category'
 import {deletePhoto} from "@/api/photo.js";
+import {getAllSuppliers, searchSuppliers as fetchSuppliers} from '@/api/supplier'
 
 const {t} = useI18n()
 const router = useRouter()
@@ -276,10 +311,14 @@ const uploadHeaders = {
     token: `Bearer ${localStorage.getItem('token')}`
 }
 
+const supplierOptions = ref([])
+const suppliersLoading = ref(false)
+
 const form = ref({
     img: '',
     name: '',
     supplier:'', // 供应商
+    supplierId: null, // 供应商ID
     categoryId: '',
     price: 0,
     original_price: 0,
@@ -317,6 +356,9 @@ const rules = {
     ],
     description: [
         {required: true, message: t('validate.descriptionRequired'), trigger: 'blur'}
+    ],
+    supplierId: [
+        {required: true, message: t('product.supplierRequired'), trigger: 'change'}
     ]
 }
 
@@ -562,8 +604,42 @@ const generateSkus = () => {
     ElMessage.success(t('product.skusGenerated', {count: form.value.skus.length}))
 }
 
+// 加载所有供应商
+const loadAllSuppliers = async () => {
+    suppliersLoading.value = true
+    try {
+        const data = await getAllSuppliers()
+        supplierOptions.value = data
+    } catch (error) {
+        console.error('Failed to load suppliers:', error)
+        ElMessage.error(t('message.fetchFailed'))
+    } finally {
+        suppliersLoading.value = false
+    }
+}
+
+// 搜索供应商
+const searchSuppliers = async (query) => {
+    if (query.length < 1) return
+    suppliersLoading.value = true
+    try {
+        const data = await fetchSuppliers(query)
+        supplierOptions.value = data
+    } catch (error) {
+        console.error('Failed to search suppliers:', error)
+    } finally {
+        suppliersLoading.value = false
+    }
+}
+
+// 新增供应商
+const addNewSupplier = () => {
+    router.push('/supplier/add')
+}
+
 onMounted(() => {
     fetchCategories()
+    loadAllSuppliers() // 加载供应商数据
 })
 </script>
 

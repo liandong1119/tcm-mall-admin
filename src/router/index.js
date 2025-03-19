@@ -28,13 +28,52 @@ const routes = [
           affix: true
         }
       },
+      // {
+      //   path: 'merchant/list',
+      //   name: 'MerchantList',
+      //   component: () => import('../views/merchant/index.vue'),
+      //   meta: { 
+      //     title: 'menu.merchant',
+      //     icon: 'Shop'
+      //   }
+      // },
       {
-        path: 'merchant/list',
-        name: 'MerchantList',
-        component: () => import('../views/merchant/index.vue'),
+        path: 'supplier',
+        name: 'Supplier',
+        redirect: '/supplier/list',
+        meta: {
+          title: 'menu.supplier',
+          icon: 'TrendCharts'
+        },
+        children: [
+          {
+            path: 'list',
+            name: 'SupplierList',
+            component: () => import('../views/supplier/index.vue'),
+            meta: { 
+              title: 'menu.supplierList'
+            }
+          }
+        ]
+      },
+      {
+        path: 'supplier/add',
+        name: 'SupplierAdd',
+        component: () => import('../views/supplier/index.vue'),
         meta: { 
-          title: 'menu.merchant',
-          icon: 'Shop'
+          title: 'supplier.add',
+          hidden: true,
+          activeMenu: '/supplier/list'
+        }
+      },
+      {
+        path: 'supplier/edit/:id',
+        name: 'SupplierEdit',
+        component: () => import('../views/supplier/index.vue'),
+        meta: { 
+          title: 'supplier.edit',
+          hidden: true,
+          activeMenu: '/supplier/list'
         }
       },
       {

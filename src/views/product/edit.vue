@@ -99,6 +99,40 @@
                     <el-input v-model="form.brand"/>
                 </el-form-item>
 
+                <el-form-item :label="$t('product.supplier')" prop="supplierId">
+                    <el-select 
+                        v-model="form.supplierId" 
+                        filterable 
+                        remote 
+                        :remote-method="searchSuppliers"
+                        :loading="suppliersLoading"
+                        placeholder="请选择供应商"
+                        class="w-100"
+                    >
+                        <el-option
+                            v-for="item in supplierOptions"
+                            :key="item.id"
+                            :label="item.name"
+                            :value="item.id"
+                        >
+                            <div class="supplier-option">
+                                <span>{{ item.name }}</span>
+                                <small v-if="item.contactName">
+                                    ({{ item.contactName }}: {{ item.contactPhone }})
+                                </small>
+                            </div>
+                        </el-option>
+                    </el-select>
+                    <div class="supplier-actions">
+                        <el-button link type="primary" @click="loadAllSuppliers">
+                            加载全部供应商
+                        </el-button>
+                        <el-button link type="success" @click="addNewSupplier">
+                            新增供应商
+                        </el-button>
+                    </div>
+                </el-form-item>
+
                 <el-form-item :label="$t('product.supplier')" prop="supplier">
                     <el-input v-model="form.supplier"/>
                 </el-form-item>
@@ -272,6 +306,7 @@ import {Plus} from '@element-plus/icons-vue'
 import {getProductDetail, updateProduct} from '@/api/product'
 import {getAllCategory, getCategoryList} from '@/api/category'
 import {deletePhoto} from '@/api/photo'
+import {getAllSuppliers, searchSuppliers as fetchSuppliers} from '@/api/supplier'
 
 const {t} = useI18n()
 const router = useRouter()
@@ -284,6 +319,8 @@ const fileList = ref([])
 // 商品的封面
 const imgList = ref([])
 const imageIndexMap = ref(new Map()) // 用于存储图片URL和索引的映射
+const supplierOptions = ref([])
+const suppliersLoading = ref(false)
 
 // 上传相关配置
 const uploadUrl = import.meta.env.VITE_APP_UPLOAD_URL
@@ -309,7 +346,10 @@ const form = ref({
     specifications: [],
     skus: [],
     images: [], // 存储图片URL列表，用于SKU选择
-    photoIds: [] // 存储图片ID列表
+    photoIds: [], // 存储图片ID列表
+    supplierId: '',
+    supplierOptions: [],
+    suppliersLoading: false
 })
 
 const rules = {
@@ -328,6 +368,9 @@ const rules = {
     ],
     description: [
         {required: true, message: t('validate.descriptionRequired'), trigger: 'blur'}
+    ],
+    supplierId: [
+        {required: true, message: t('product.supplierRequired'), trigger: 'change'}
     ]
 }
 
@@ -699,9 +742,43 @@ const generateSkus = () => {
     ElMessage.success(t('product.skusGenerated', {count: form.value.skus.length}))
 }
 
+// 加载所有供应商
+const loadAllSuppliers = async () => {
+    suppliersLoading.value = true
+    try {
+        const data = await getAllSuppliers()
+        supplierOptions.value = data
+    } catch (error) {
+        console.error('Failed to load suppliers:', error)
+        ElMessage.error(t('message.fetchFailed'))
+    } finally {
+        suppliersLoading.value = false
+    }
+}
+
+// 搜索供应商
+const searchSuppliers = async (query) => {
+    if (query.length < 1) return
+    suppliersLoading.value = true
+    try {
+        const data = await fetchSuppliers(query)
+        supplierOptions.value = data
+    } catch (error) {
+        console.error('Failed to search suppliers:', error)
+    } finally {
+        suppliersLoading.value = false
+    }
+}
+
+// 新增供应商
+const addNewSupplier = () => {
+    router.push('/supplier/add')
+}
+
 onMounted(async () => {
     await fetchCategories()
     await fetchProductDetail()
+    loadAllSuppliers() // 加载供应商数据
 })
 </script>
 

@@ -31,6 +31,7 @@ export default {
     confirmDelete: 'Are you sure to delete?',
     yes: 'Yes',
     no: 'No',
+    actions: 'Actions',
     register: 'Register',
     updateTime: 'Update Time',
     description: 'Description',
@@ -60,6 +61,8 @@ export default {
     productList: 'Product List',
     category: 'Categories',
     order: 'Orders',
+    supplier: 'Suppliers',
+    supplierList: 'Supplier List',
     orderList: 'Order List',
     refund: 'Refunds',
     review: 'Reviews',
@@ -349,6 +352,8 @@ export default {
     systemSubtitle: 'Traditional Chinese Medicine Mall Management System',
     remember: 'Remember me',
     forgot: 'Forgot password',
+    verifyCode: 'Verification Code',
+    verifyCodePlaceholder: 'Please enter verification code',
     submit: 'Login',
     usernameRequired: 'Please input username',
     passwordRequired: 'Please input password'
@@ -402,5 +407,31 @@ export default {
     min: 'Value cannot be less than {min}',
     maxLength: 'Length cannot exceed {max} characters',
     minLength: 'Length must be at least {min} characters'
-  }
+  },
+  supplier: {
+    list: 'Supplier List',
+    add: 'Add Supplier',
+    edit: 'Edit Supplier',
+    detail: 'Supplier Detail',
+    name: 'Supplier Name',
+    contactName: 'Contact Person',
+    contactPhone: 'Contact Phone',
+    contactEmail: 'Contact Email',
+    address: 'Address',
+    description: 'Description',
+    statusName: 'Status',
+    createTime: 'Create Time',
+    updateTime: 'Update Time',
+    searchName: 'Search Supplier Name',
+    confirmDelete: 'Confirm delete this supplier?',
+    status: {
+      active: 'Active',
+      inactive: 'Inactive'
+    },
+    validate: {
+      contactNameRequired: 'Please enter contact name',
+      contactPhoneRequired: 'Please enter contact phone',
+      contactEmailRequired: 'Please enter contact email'
+    }
+  },
 }
