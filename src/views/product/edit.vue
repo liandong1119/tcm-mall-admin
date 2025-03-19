@@ -373,6 +373,12 @@ const fetchProductDetail = async () => {
             specifications: data.specifications,
             skus: data.skus
         }
+        if (form.value.photoIds === undefined){
+            form.value.photoIds = []
+        }
+        if (form.value.images === undefined){
+            form.value.images = []
+        }
 
         // 处理主图
         if (data.img) {
@@ -383,10 +389,12 @@ const fetchProductDetail = async () => {
             }]
         }
 
+
         // 处理商品图片
         if (data.photos && data.photoUrl && data.photoUrl.length > 0) {
             // 解析photos字段，获取图片ID列表
             const photoIds = data.photos.split(',').filter(id => id);
+
             form.value.photoIds = photoIds;
             
             // 创建图片ID和URL的映射
@@ -506,6 +514,7 @@ const handleRemove = async (file) => {
 const submitForm = async () => {
     if (!formRef.value) return
 
+    console.log(form.value)
     await formRef.value.validate(async (valid) => {
         if (valid) {
             submitting.value = true
@@ -520,9 +529,16 @@ const submitForm = async () => {
                             price_increment: Number(option.price_increment) || 0
                         }))
                     }))),
+                    // skus: form.value.skus.map(sku => ({
+                    //     ...sku,
+                    //     specs: JSON.stringify(sku.specs)
+                    // }))
                     skus: form.value.skus.map(sku => ({
-                        ...sku,
-                        specs: JSON.stringify(sku.specs)
+
+                        specs: JSON.stringify(sku.specs),
+                        image: sku.image,
+                        price: Number(sku.price),
+                        stock: Number(sku.stock)
                     }))
                 }
 

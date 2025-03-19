@@ -21,7 +21,7 @@ export function addProduct(data) {
 // 更新商品
 export function updateProduct(id, data) {
   return request({
-    url: `/products/${id}`,
+    url: `/products/update`,
     method: 'put',
     data
   })
