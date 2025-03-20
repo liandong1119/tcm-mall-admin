@@ -13,9 +13,9 @@
       <template #title>{{ $t('menu.dashboard') }}</template>
     </el-menu-item>
 
-    <el-menu-item index="/merchant/list">
+    <el-menu-item index="/supplier/list">
       <el-icon><Shop /></el-icon>
-      <template #title>{{ $t('menu.merchant') }}</template>
+      <template #title>{{ $t('menu.supplier') }}</template>
     </el-menu-item>
 
     <el-sub-menu index="/product">
