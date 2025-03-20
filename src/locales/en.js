@@ -207,7 +207,7 @@ export default {
     quantity: 'Quantity',
     shipTime: 'Ship Time',
     confirmShip: 'Are you sure to ship this order?',
-    status: {
+    statuses: {
       pending: 'Pending Payment',
       paid: 'Paid',
       shipped: 'Shipped',

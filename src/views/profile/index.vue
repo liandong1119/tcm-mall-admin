@@ -20,9 +20,9 @@
             <el-form-item :label="$t('user.username')" prop="username">
               <el-input v-model="basicForm.username" disabled />
             </el-form-item>
-            <el-form-item :label="$t('user.nickname')" prop="nickname">
-              <el-input v-model="basicForm.nickname" />
-            </el-form-item>
+<!--            <el-form-item :label="$t('user.nickname')" prop="nickname">-->
+<!--              <el-input v-model="basicForm.nickname" />-->
+<!--            </el-form-item>-->
             <el-form-item :label="$t('user.email')" prop="email">
               <el-input v-model="basicForm.email" />
             </el-form-item>
