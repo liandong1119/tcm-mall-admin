@@ -83,7 +83,7 @@
 import { ref, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { ElMessage } from 'element-plus'
-import { getAdminInfo, updateAdminPassword } from '@/api/user'
+import {getAdminInfo, updateAdminInfo, updateAdminPassword} from '@/api/user'
 
 const { t } = useI18n()
 
@@ -154,7 +154,7 @@ const fetchAdminInfo = async () => {
       username: data.username,
       nickname: data.nickname,
       email: data.email,
-      phone: data.phone
+      phone: data.phoneNumber
     }
   } catch (error) {
     console.error('Failed to fetch admin info:', error)
@@ -171,6 +171,12 @@ const updateBasicInfo = async () => {
       submitting.value = true
       try {
         // TODO: 实现更新基本信息的API
+          const updateInfo = {
+              nickname: basicForm.value.nickname,
+              email: basicForm.value.email,
+              phoneNumber: basicForm.value.phone,
+          }
+          await updateAdminInfo(updateInfo)
         ElMessage.success(t('message.updateSuccess'))
       } catch (error) {
         console.error('Failed to update basic info:', error)

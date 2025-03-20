@@ -46,15 +46,24 @@ export function login(data) {
 // 获取管理员信息
 export function getAdminInfo() {
   return request({
-    url: '/admin/info',
+    url: '/seller/info',
     method: 'get'
+  })
+}
+
+// 更新管理员信息
+export function updateAdminInfo(data) {
+  return request({
+    url: '/seller/update',
+    method: 'put',
+    data
   })
 }
 
 // 更新管理员密码
 export function updateAdminPassword(data) {
   return request({
-    url: '/admin/password',
+    url: '/seller/password',
     method: 'put',
     data
   })
