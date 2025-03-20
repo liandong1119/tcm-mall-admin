@@ -15,7 +15,8 @@
             <el-input v-model="searchForm.name" :placeholder="$t('supplier.searchName')" />
           </el-form-item>
           <el-form-item  :label="$t('supplier.statusName')">
-            <el-select style="width: 150px;" v-model="searchForm.status" clearable :placeholder="$t('common.pleaseSelect')">
+            <el-select style="width: 150px;" v-model="searchForm.status" clearable :placeholder="$t('common.all')">
+                <el-option :label="$t('common.all')" value="" />
               <el-option :label="$t('supplier.status.active')" :value="1" />
               <el-option :label="$t('supplier.status.inactive')" :value="0" />
             </el-select>
@@ -186,7 +187,7 @@ const fetchSuppliers = async () => {
       pageSize: pageSize.value,
       ...searchForm
     }
-    const { data, total: totalCount } = await getSupplierList(params)
+    const { list:data, total: totalCount } = await getSupplierList(params)
     supplierList.value = data
     total.value = totalCount
   } catch (error) {

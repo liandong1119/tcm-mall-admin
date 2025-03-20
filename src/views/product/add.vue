@@ -99,7 +99,7 @@
 
                 <el-form-item :label="$t('product.supplier')" prop="supplierId">
                     <el-select 
-                        v-model="form.supplierId" 
+                        v-model="form.supplier"
                         filterable 
                         remote 
                         :remote-method="searchSuppliers"
@@ -111,7 +111,7 @@
                             v-for="item in supplierOptions"
                             :key="item.id"
                             :label="item.name"
-                            :value="item.id"
+                            :value="item.name"
                         >
                             <div class="supplier-option">
                                 <span>{{ item.name }}</span>
@@ -121,19 +121,19 @@
                             </div>
                         </el-option>
                     </el-select>
-                    <div class="supplier-actions">
-                        <el-button link type="primary" @click="loadAllSuppliers">
-                            加载全部供应商
-                        </el-button>
-                        <el-button link type="success" @click="addNewSupplier">
-                            新增供应商
-                        </el-button>
-                    </div>
+<!--                    <div class="supplier-actions">-->
+<!--                        <el-button link type="primary" @click="loadAllSuppliers">-->
+<!--                            加载全部供应商-->
+<!--                        </el-button>-->
+<!--                        <el-button link type="success" @click="addNewSupplier">-->
+<!--                            新增供应商-->
+<!--                        </el-button>-->
+<!--                    </div>-->
                 </el-form-item>
 
-                <el-form-item :label="$t('product.supplier')" prop="supplier">
-                    <el-input v-model="form.supplier"/>
-                </el-form-item>
+<!--                <el-form-item :label="$t('product.supplier')" prop="supplier">-->
+<!--                    <el-input v-model="form.supplier"/>-->
+<!--                </el-form-item>-->
 
                 <el-form-item :label="$t('product.origin')" prop="origin">
                     <el-input v-model="form.origin"/>
@@ -357,7 +357,7 @@ const rules = {
     description: [
         {required: true, message: t('validate.descriptionRequired'), trigger: 'blur'}
     ],
-    supplierId: [
+    supplier: [
         {required: true, message: t('product.supplierRequired'), trigger: 'change'}
     ]
 }
