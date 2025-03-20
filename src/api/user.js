@@ -3,7 +3,7 @@ import request from '@/utils/request'
 // 获取用户列表
 export function getUserList(params) {
   return request({
-    url: '/admin/users',
+    url: '/user/list',
     method: 'get',
     params
   })
@@ -20,7 +20,7 @@ export function getUserDetail(id) {
 // 更新用户状态
 export function updateUserStatus(id, status) {
   return request({
-    url: `/admin/users/${id}/status`,
+    url: `/user/${id}/status`,
     method: 'put',
     data: { status }
   })
@@ -29,8 +29,8 @@ export function updateUserStatus(id, status) {
 // 重置用户密码
 export function resetUserPassword(id) {
   return request({
-    url: `/admin/users/${id}/password/reset`,
-    method: 'post'
+    url: `/user/${id}/password/reset`,
+    method: 'put'
   })
 }
 

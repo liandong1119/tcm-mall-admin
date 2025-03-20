@@ -28,7 +28,7 @@
       <!-- 用户列表 -->
       <el-table :data="userList" v-loading="loading" style="width: 100%">
         <el-table-column prop="id" label="ID" width="80" />
-        <el-table-column prop="username" :label="$t('user.username')" width="150" />
+        <el-table-column prop="account" :label="$t('user.username')" width="150" />
         <el-table-column prop="nickname" :label="$t('user.nickname')" width="150" />
         <el-table-column prop="phone" :label="$t('user.phone')" width="150" />
         <el-table-column prop="email" :label="$t('user.email')" width="200" />
@@ -84,7 +84,7 @@
     >
       <el-descriptions :column="2" border>
         <el-descriptions-item :label="$t('user.username')">
-          {{ currentUser.username }}
+          {{ currentUser.account }}
         </el-descriptions-item>
         <el-descriptions-item :label="$t('user.nickname')">
           {{ currentUser.nickname }}
@@ -154,7 +154,7 @@ const fetchUsers = async () => {
   loading.value = true
   try {
     const { list, total: totalCount } = await getUserList({
-      page: currentPage.value,
+      pageNum: currentPage.value,
       pageSize: pageSize.value,
       ...searchForm.value
     })
@@ -265,7 +265,12 @@ onMounted(() => {
 })
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
+
+
+.el-select {
+    --el-select-width: 150px !important;
+}
 .user-container {
   padding: 20px;
 }
