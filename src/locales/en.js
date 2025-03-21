@@ -74,7 +74,21 @@ export default {
     role: 'Roles',
     permission: 'Permissions',
     admin: 'Administrators',
-    log: 'System Logs'
+    log: 'System Logs',
+    forgotPassword: 'Forgot Password',
+  },
+  findPassword:{
+    emailPlaceholder: 'Enter email',
+    sendEmailCode: 'Send Code',
+    resetPassword: 'Reset Password',
+    resetPasswordDesc: 'Please enter your registered email, we will send you a verification code',
+    resetPasswordTip: 'After resetting your password, please login with your new password',
+    newPasswordPlaceholder: 'Enter new password',
+    oldPasswordPlaceholder: 'Enter old password',
+    verificationCodePlaceholder: 'Enter verification code',
+    sendCode: 'Send Code',
+    backToLogin: 'Back to Login',
+    confirmPasswordPlaceholder: 'Confirm password',
   },
   dashboard: {
     totalSales: 'Total Sales',
@@ -249,7 +263,9 @@ export default {
     replyFailed: 'Reply failed',
     resetSuccess: 'Reset successful',
     resetFailed: 'Reset failed',
-    developing: 'This feature is under development...'
+    developing: 'This feature is under development...',
+    resetPasswordSuccess: 'Password reset successful',
+    verificationCodeSent: 'Verification code has been sent',
   },
   validate: {
     usernameRequired: 'Please enter username',

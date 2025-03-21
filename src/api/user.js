@@ -67,4 +67,26 @@ export function updateAdminPassword(data) {
     method: 'put',
     data
   })
-} 
+}
+
+// 根据邮箱验证码找回密码
+export function resetPassword(data) {
+  return request({
+    url: '/seller/findPassword',
+    method: 'post',
+    data
+  })
+}
+
+
+// 发送邮箱验证码
+export function sendEmailCode(email) {
+  return request({
+    url: '/verifyCode/send',
+    method: 'post',
+    params: {
+      addr: email,
+      type: 1
+    }
+  })
+}

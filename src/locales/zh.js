@@ -81,7 +81,8 @@ export default {
     role: '角色管理',
     permission: '权限管理',
     admin: '管理员',
-    log: '系统日志'
+    log: '系统日志',
+    forgotPassword: '忘记密码',
   },
   dashboard: {
     totalSales: '总销售额',
@@ -245,7 +246,9 @@ export default {
     validationError: '请检查输入是否正确',
     fileTypeError: '文件类型不正确',
     fileSizeError: '文件大小超出限制',
-    developing: '该功能正在开发中...'
+    developing: '该功能正在开发中...',
+    resetPasswordSuccess: '密码重置成功',
+    verificationCodeSent: '验证码已发送',
   },
   validate: {
     usernameRequired: '请输入用户名',
@@ -353,6 +356,20 @@ export default {
     submit: '登录',
     usernameRequired: '请输入用户名',
     passwordRequired: '请输入密码'
+  },
+  findPassword:{
+    emailPlaceholder: '请输入邮箱',
+    sendEmailCode: '发送验证码',
+    resetPassword: '重置密码',
+    resetPasswordDesc: '重置您的账号密码',
+    resetPasswordTip: '请输入您的邮箱以重置密码',
+    newPasswordPlaceholder: '请输入新密码',
+    oldPasswordPlaceholder: '请输入原密码',
+    verificationCodePlaceholder: '请输入验证码',
+    sendCode: '发送验证码',
+    backToLogin: '返回登录',
+    confirmPasswordPlaceholder: '请确认密码',
+
   },
   refund: {
     amount: '退款金额',

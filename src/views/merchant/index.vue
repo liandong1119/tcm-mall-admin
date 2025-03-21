@@ -4,14 +4,14 @@
       <!-- 搜索区域 -->
       <div class="search-bar">
         <el-form :inline="true" :model="searchForm">
-          <el-form-item :label="$t('merchant.name')">
+          <el-form-item :label="$t('supplier.name')">
             <el-input v-model="searchForm.name" :placeholder="$t('common.search')" />
           </el-form-item>
-          <el-form-item :label="$t('merchant.status')">
+          <el-form-item :label="$t('supplier.status')">
             <el-select v-model="searchForm.status" :placeholder="$t('common.all')">
               <el-option :label="$t('common.all')" value="" />
               <el-option
-                v-for="(label, value) in merchantStatus"
+                v-for="(label, value) in supplierStatus"
                 :key="value"
                 :label="label"
                 :value="value"
@@ -26,16 +26,16 @@
       </div>
 
       <!-- 商家列表 -->
-      <el-table :data="merchantList" v-loading="loading" style="width: 100%">
+      <el-table :data="supplierList" v-loading="loading" style="width: 100%">
         <el-table-column prop="id" label="ID" width="80" />
-        <el-table-column prop="name" :label="$t('merchant.name')" width="200" />
-        <el-table-column prop="contact" :label="$t('merchant.contact')" width="120" />
-        <el-table-column prop="phone" :label="$t('merchant.phone')" width="150" />
-        <el-table-column prop="address" :label="$t('merchant.address')" show-overflow-tooltip />
-        <el-table-column prop="status" :label="$t('merchant.status')" width="100">
+        <el-table-column prop="name" :label="$t('supplier.name')" width="200" />
+        <el-table-column prop="contact" :label="$t('supplier.contact')" width="120" />
+        <el-table-column prop="phone" :label="$t('supplier.phone')" width="150" />
+        <el-table-column prop="addr" :label="$t('supplier.address')" show-overflow-tooltip />
+        <el-table-column prop="status" :label="$t('supplier.status')" width="100">
           <template #default="scope">
             <el-tag :type="scope.row.status === 1 ? 'success' : 'info'">
-              {{ merchantStatus[scope.row.status] }}
+              {{ supplierStatus[scope.row.status] }}
             </el-tag>
           </template>
         </el-table-column>
@@ -97,7 +97,7 @@
         </el-descriptions-item>
         <el-descriptions-item :label="$t('merchant.status')">
           <el-tag :type="currentMerchant.status === 1 ? 'success' : 'info'">
-            {{ merchantStatus[currentMerchant.status] }}
+            {{ supplierStatus[currentMerchant.status] }}
           </el-tag>
         </el-descriptions-item>
         <el-descriptions-item :label="$t('merchant.createTime')">
@@ -118,19 +118,19 @@
 import { ref, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { getMerchantList, updateMerchantStatus } from '@/api/merchant'
+import { getSupplierList, updateMerchantStatus } from '@/api/supplier.js'
 
 const { t } = useI18n()
 
 // 商家状态
-const merchantStatus = {
-  0: t('merchant.disabled'),
-  1: t('merchant.enabled')
+const supplierStatus = {
+  0: t('supplier.disabled'),
+  1: t('supplier.enabled')
 }
 
 // 列表相关
 const loading = ref(false)
-const merchantList = ref([])
+const supplierList = ref([])
 const currentPage = ref(1)
 const pageSize = ref(10)
 const total = ref(0)
@@ -143,16 +143,16 @@ const searchForm = ref({
 const detailDialogVisible = ref(false)
 const currentMerchant = ref({})
 
-// 获取商家列表
-const fetchMerchants = async () => {
+// 获取供应商列表
+const fetchSupplierList = async () => {
   loading.value = true
   try {
-    const { list, total: totalCount } = await getMerchantList({
-      page: currentPage.value,
+    const { list, total: totalCount } = await getSupplierList({
+      pageNum: currentPage.value,
       pageSize: pageSize.value,
       ...searchForm.value
     })
-    merchantList.value = list
+    supplierList.value = list
     total.value = totalCount
   } catch (error) {
     console.error('Failed to fetch merchants:', error)
@@ -165,7 +165,7 @@ const fetchMerchants = async () => {
 // 搜索相关方法
 const handleSearch = () => {
   currentPage.value = 1
-  fetchMerchants()
+  fetchSupplierList()
 }
 
 const resetSearch = () => {
@@ -178,12 +178,12 @@ const resetSearch = () => {
 
 const handleSizeChange = (val) => {
   pageSize.value = val
-  fetchMerchants()
+  fetchSupplierList()
 }
 
 const handleCurrentChange = (val) => {
   currentPage.value = val
-  fetchMerchants()
+  fetchSupplierList()
 }
 
 // 商家操作方法
@@ -205,7 +205,7 @@ const handleDisable = (row) => {
     try {
       await updateMerchantStatus(row.id, 0)
       ElMessage.success(t('message.updateSuccess'))
-      fetchMerchants()
+      fetchSupplierList()
     } catch (error) {
       console.error('Failed to disable merchant:', error)
       ElMessage.error(t('message.updateFailed'))
@@ -226,7 +226,7 @@ const handleEnable = (row) => {
     try {
       await updateMerchantStatus(row.id, 1)
       ElMessage.success(t('message.updateSuccess'))
-      fetchMerchants()
+      fetchSupplierList()
     } catch (error) {
       console.error('Failed to enable merchant:', error)
       ElMessage.error(t('message.updateFailed'))
@@ -235,7 +235,7 @@ const handleEnable = (row) => {
 }
 
 onMounted(() => {
-  fetchMerchants()
+  fetchSupplierList()
 })
 </script>
 

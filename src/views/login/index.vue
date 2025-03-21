@@ -197,7 +197,7 @@ const refreshCaptcha = async () => {
 }
 
 const forgotPassword = () => {
-    ElMessage.info('该功能正在开发中...')
+    router.push('/seller/forgot-password')
 }
 
 const handleSetLanguage = (lang) => {
