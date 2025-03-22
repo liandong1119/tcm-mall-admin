@@ -12,9 +12,9 @@
                             </el-tag>
                         </div>
                     </template>
-                    <div class="card-value">¥{{ (todaySales.smallNum || 0).toFixed(2) }}</div>
+                    <div class="card-value">¥{{ (todaySales.bigNum || 0) }}</div>
                     <div class="card-footer">
-                        <div>{{ $t('dashboard.weeklyGrowth') }}: +{{ data.weeklyGrowth || 0 }}%</div>
+                        <div>{{ $t('dashboard.weeklyGrowth') }}: {{ todaySales.smallNum }}</div>
                     </div>
                 </el-card>
             </el-col>
@@ -134,12 +134,12 @@
 </template>
 
 <script setup>
-import {ref, computed, onMounted} from 'vue'
+import {ref, computed, onMounted, watch} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {getDashboardData} from '@/api/mock'
 import {
     getAllStock, getCategorySales,
-    getHotSellProduct,
+    getHotSellProduct, getLastMonthSales,
     getLastWeekSales, getStatusRate,
     getTodayOrders,
     getTodaySales,
@@ -180,16 +180,24 @@ const fetchData = async () => {
         // 获取一些数据
         todayOrders.value = await getTodayOrders()
         todayOrders.value.smallNum = parseInt(todayOrders.value.smallNum)
-        console.log("今日订单数据：",todayOrders.value)
+        console.log("今日订单数据：", todayOrders.value)
         pendingOrders.value = await getUnProcessedOrders()
         allStock.value = await getAllStock()
         todaySales.value = await getTodaySales()
+        console.log(todaySales.value)
         lastWeekSales.value = await getLastWeekSales()
         hotSellProduct.value = await getHotSellProduct()
-        console.log("热销产品的状态：：",hotSellProduct.value)
+        console.log("热销产品的状态：：", hotSellProduct.value)
         categorySales.value = await getCategorySales()
+        categorySales.value.forEach(item => {
+            item.name = item.name
+            item.value = item.num
+        })
         statusRate.value = await getStatusRate()
-
+        statusRate.value.forEach(item => {
+            item.name = item.name
+            item.value = item.num
+        })
         /* const response = await getDashboardData()
          // 使用解构赋值并提供默认值
          data.value = {
@@ -230,7 +238,7 @@ const salesChartOption = computed(() => ({
     },
     xAxis: {
         type: 'category',
-        data:  [],
+        data: lastWeekSales.value.map(item => item.keyTime),
         axisLabel: {
             rotate: 45
         }
@@ -251,17 +259,24 @@ const salesChartOption = computed(() => ({
         {
             name: t('dashboard.amount'),
             type: 'bar',
-            data: data.value.salesData?.slice(-7).map(item => item.amount) || []
+            data: lastWeekSales.value.map(item => item.totalAmount)
         },
         {
             name: t('dashboard.orders'),
             type: 'line',
             yAxisIndex: 1,
-            data: data.value.salesData?.slice(-7).map(item => item.orders) || []
+            data: lastWeekSales.value.map(item => item.num)
+        }
+    ],
+    dataZoom: [
+        {
+            type: 'slider',
+            xAxisIndex: 0,
+            start: 0,
+            end: 100
         }
     ]
-}))
-
+}));
 // 品类销售占比图表配置
 const categoryChartOption = computed(() => ({
     tooltip: {
@@ -269,9 +284,8 @@ const categoryChartOption = computed(() => ({
         formatter: '{b}: {c} ({d}%)'
     },
     legend: {
-        orient: 'vertical',
-        right: 10,
-        top: 'center'
+        orient: 'horizontal',
+        top: 10,
     },
     series: [
         {
@@ -288,7 +302,7 @@ const categoryChartOption = computed(() => ({
                     fontWeight: 'bold'
                 }
             },
-            data:  []
+            data: categorySales.value || []
         }
     ]
 }))
@@ -300,26 +314,26 @@ const orderChartOption = computed(() => ({
         formatter: '{b}: {c} ({d}%)'
     },
     legend: {
-        orient: 'vertical',
-        right: 10,
-        top: 'center'
+        orient: 'horizontal',
+        top: 10,
     },
     series: [
         {
             type: 'pie',
             radius: '50%',
-            data: [
-                // {value: data.value.orderStats?.pending || 0, name: t('order.status.pending')},
-                // {value: data.value.orderStats?.processing || 0, name: t('order.status.processing')},
-                // {value: data.value.orderStats?.shipped || 0, name: t('order.status.shipped')},
-                // {value: data.value.orderStats?.completed || 0, name: t('order.status.completed')},
-                // {value: data.value.orderStats?.refunding || 0, name: t('order.status.refunding')}
-            ]
-            // data: statusRate.value || []
+            data: statusRate.value || []
         }
     ]
 }))
 
+
+watch(timeRange, async (newValue) => {
+    if (newValue === "month") {
+        lastWeekSales.value = await getLastMonthSales()
+    } else {
+        lastWeekSales.value = await getLastWeekSales()
+    }
+})
 onMounted(() => {
     fetchData()
 })

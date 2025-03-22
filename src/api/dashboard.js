@@ -62,6 +62,17 @@ export function getLastWeekSales(){
 }
 
 /**
+ * 获取最近一周的销售数量和销售的总的金额。
+ * @returns {*}
+ */
+export function getLastMonthSales(){
+    return request({
+        url: '/dashboard/lastMonthSales',
+        method: 'get',
+    })
+}
+
+/**
  * 获取近期的热销的商品
  */
 export function getHotSellProduct(){

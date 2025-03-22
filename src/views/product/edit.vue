@@ -101,7 +101,7 @@
 
                 <el-form-item :label="$t('product.supplier')" prop="supplierId">
                     <el-select 
-                        v-model="form.supplierId" 
+                        v-model="form.supplier"
                         filterable 
                         remote 
                         :remote-method="searchSuppliers"
@@ -113,7 +113,7 @@
                             v-for="item in supplierOptions"
                             :key="item.id"
                             :label="item.name"
-                            :value="item.id"
+                            :value="item.name"
                         >
                             <div class="supplier-option">
                                 <span>{{ item.name }}</span>
@@ -133,9 +133,9 @@
                     </div>
                 </el-form-item>
 
-                <el-form-item :label="$t('product.supplier')" prop="supplier">
-                    <el-input v-model="form.supplier"/>
-                </el-form-item>
+<!--                <el-form-item :label="$t('product.supplier')" prop="supplier">-->
+<!--                    <el-input v-model="form.supplier"/>-->
+<!--                </el-form-item>-->
 
                 <el-form-item :label="$t('product.origin')" prop="origin">
                     <el-input v-model="form.origin"/>
@@ -577,7 +577,7 @@ const submitForm = async () => {
                     //     specs: JSON.stringify(sku.specs)
                     // }))
                     skus: form.value.skus.map(sku => ({
-
+                        id: sku.id,
                         specs: JSON.stringify(sku.specs),
                         image: sku.image,
                         price: Number(sku.price),
