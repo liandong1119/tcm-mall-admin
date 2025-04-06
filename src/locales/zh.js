@@ -188,6 +188,13 @@ export default {
     saveFailed: '保存失败'
   },
   order: {
+    operation: "操作",
+    quantity:"商品数量",
+    subtotal: "总价",
+    detail:"订单详情",
+    customerName: "用户",
+    address:"地址",
+    phone:"手机",
     status: '订单状态',
     orderNo: '订单编号',
     amount: '订单金额',

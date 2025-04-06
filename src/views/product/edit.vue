@@ -177,8 +177,6 @@
                             <div v-for="(option, optionIndex) in spec.options" :key="optionIndex" class="option-item">
                                 <el-input v-model="option.text" :placeholder="$t('product.optionText')"/>
                                 <el-input v-model="option.value" :placeholder="$t('product.optionValue')"/>
-                                <el-input-number v-model="option.price_increment"
-                                                 :placeholder="$t('product.priceIncrement')" :min="-1000" :max="1000"/>
                                 <el-button type="danger" @click="removeOption(spec, optionIndex)" icon="Delete"
                                            circle/>
                             </div>
@@ -369,9 +367,9 @@ const rules = {
     description: [
         {required: true, message: t('validate.descriptionRequired'), trigger: 'blur'}
     ],
-    supplierId: [
-        {required: true, message: t('product.supplierRequired'), trigger: 'change'}
-    ]
+    // supplierId: [
+    //     {required: true, message: t('product.supplierRequired'), trigger: 'change'}
+    // ]
 }
 
 // 获取分类列表
@@ -468,6 +466,8 @@ const fetchProductDetail = async () => {
                 image: form.value.img || ''
             });
         }
+
+        // 处理供应商的回显
     } catch (error) {
         console.error('Failed to fetch product detail:', error);
         ElMessage.error(t('message.fetchFailed'));

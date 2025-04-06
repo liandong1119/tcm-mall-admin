@@ -183,7 +183,7 @@ const resetSearch = () => {
 }
 
 const handleDetail = (row) => {
-    router.push(`/order/${row.id}`)
+    router.push(`/order/${row.orderCode}`)
 }
 
 const handleShip = (row) => {

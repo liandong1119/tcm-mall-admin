@@ -193,6 +193,9 @@ export default {
     saveFailed: 'Save Failed'
   },
   order: {
+    operation: "Operation",
+    detail:"Order Detail",
+    address:"Address",
     orderNo: 'Order No.',
     status: 'Status',
     amount: 'Amount',

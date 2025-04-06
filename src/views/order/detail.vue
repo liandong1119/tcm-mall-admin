@@ -12,49 +12,68 @@
         <!-- 基本信息 -->
         <el-descriptions :column="2" border>
           <el-descriptions-item :label="$t('order.orderNo')">
-            {{ orderDetail.orderNo }}
+            {{ orderDetail.orderCode }}
           </el-descriptions-item>
-          <el-descriptions-item :label="$t('order.status')">
+<!--          <el-descriptions-item :label="$t('order.status')">
             <el-tag :type="getOrderStatusType(orderDetail.status)">
-              {{ $t(`order.status.${orderDetail.status}`) }}
+              {{ $t(`order.statuses.${orderDetail.status}`) }}
             </el-tag>
-          </el-descriptions-item>
+          </el-descriptions-item>-->
           <el-descriptions-item :label="$t('order.amount')">
-            ¥{{ orderDetail.amount?.toFixed(2) }}
+            ¥{{ orderDetail.totalAmount?.toFixed(2) }}
           </el-descriptions-item>
           <el-descriptions-item :label="$t('order.createTime')">
             {{ orderDetail.createTime }}
           </el-descriptions-item>
           <el-descriptions-item :label="$t('order.customerName')">
-            {{ orderDetail.customerName }}
+            {{ orderDetail.receipt }}
           </el-descriptions-item>
           <el-descriptions-item :label="$t('order.phone')">
-            {{ orderDetail.phone }}
+            {{ orderDetail.contactDetailInfo }}
           </el-descriptions-item>
           <el-descriptions-item :label="$t('order.address')" :span="2">
-            {{ orderDetail.address }}
+            {{ orderDetail.addr }}
           </el-descriptions-item>
         </el-descriptions>
 
         <!-- 商品列表 -->
         <div class="section-title">{{ $t('order.items') }}</div>
-        <el-table :data="orderDetail.items" border style="width: 100%">
-          <el-table-column prop="productName" :label="$t('product.name')" />
+        <el-table :data="orderDetail.orderProductVoList" border style="width: 100%">
+          <el-table-column prop="name" :label="$t('product.name')" />
           <el-table-column prop="price" :label="$t('product.price')" width="120">
             <template #default="scope">
               ¥{{ scope.row.price.toFixed(2) }}
             </template>
           </el-table-column>
-          <el-table-column prop="quantity" :label="$t('order.quantity')" width="120" />
+          <el-table-column prop="num" :label="$t('order.quantity')" width="120" />
           <el-table-column :label="$t('order.subtotal')" width="120">
             <template #default="scope">
-              ¥{{ (scope.row.price * scope.row.quantity).toFixed(2) }}
+              ¥{{ (scope.row.price * scope.row.num).toFixed(2) }}
             </template>
           </el-table-column>
+            <el-table-column :label="$t('order.status')">
+                <template #default="scope">
+                    <el-tag :type="getOrderStatusType(scope.row.status)">
+                        {{ $t(`order.statuses.${scope.row.status}`) }}
+                    </el-tag>
+                </template>
+            </el-table-column>
+            <el-table-column :label="$t('order.operation')">
+                <template #default="scope">
+                    <el-button
+                        v-if="scope.row.status === 'paid'"
+                        type="primary"
+                        @click="handleShip(scope.row)"
+                    >{{ $t('order.ship') }}</el-button>
+                    <el-button v-else type="info" disabled="true">
+                        无
+                    </el-button>
+                </template>
+            </el-table-column>
         </el-table>
 
         <!-- 物流信息 -->
-        <template v-if="orderDetail.status === 'shipped' || orderDetail.status === 'completed'">
+<!--        <template v-if="orderDetail.status === 'shipped' || orderDetail.status === 'completed'">
           <div class="section-title">{{ $t('order.shipping') }}</div>
           <el-descriptions :column="2" border>
             <el-descriptions-item :label="$t('order.carrier')">
@@ -69,14 +88,14 @@
           </el-descriptions>
         </template>
 
-        <!-- 操作按钮 -->
+        &lt;!&ndash; 操作按钮 &ndash;&gt;
         <div class="operation-bar">
           <el-button
             v-if="orderDetail.status === 'paid'"
             type="primary"
             @click="handleShip"
           >{{ $t('order.ship') }}</el-button>
-        </div>
+        </div>-->
       </div>
     </el-card>
 
@@ -122,12 +141,13 @@
 import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
-import { ElMessage } from 'element-plus'
+import {ElMessage, ElMessageBox} from 'element-plus'
 import { getOrderDetail, shipOrder } from '@/api/order'
 
 const { t } = useI18n()
 const route = useRoute()
 const router = useRouter()
+const deliverOrderId = ref(undefined)
 
 // 订单状态
 const orderStatus = {
@@ -138,6 +158,61 @@ const orderStatus = {
   cancelled: 'info'
 }
 
+const handleShip = (row) => {
+    ElMessageBox.confirm(
+        `${t('order.confirmShip')}: ${orderDetail.value.orderCode}`,
+        t('common.warning'),
+        {
+            confirmButtonText: t('common.confirm'),
+            cancelButtonText: t('common.cancel'),
+            type: 'warning',
+        }
+    ).then(async () => {
+        try {
+            await shipOrder(row.orderId)
+            ElMessage.success(t('order.shipSuccess'))
+            fetchOrderDetail()
+        } catch (error) {
+            ElMessage.error(error.message)
+        }
+    })
+}
+
+
+const determineOrderStatus = (products) => {
+    console.log("列表为：：： ",products)
+    if (!products || products.length === 0) {
+        return 'pending'
+    }
+
+    // 状态优先级: cancelled > refunded > refunding > completed > shipped > paid > pending
+    const statusPriority = {
+        'cancelled': 7,
+        'refunded': 6,
+        'refunding': 5,
+        'completed': 4,
+        'shipped': 2,
+        'paid': 1,
+        'pending': 0
+    }
+
+    // 数字状态映射到字符串
+    const statusMap = {
+        0: "pending",
+        1: "paid",
+        2: "shipped",
+        4: "completed",
+        5: "cancelled",
+        6: "refunding",
+        7: "refunded"
+    }
+
+    // 获取所有商品的状态
+    const statuses = products.map(item => item.status = (statusMap[item.status] || 'pending'))
+
+    // 按优先级排序，取最高优先级的状态
+    return statuses.sort((a, b) => statusPriority[b] - statusPriority[a])[0]
+}
 // 快递公司列表
 const carriers = [
   { label: t('order.carrier.sf'), value: 'SF' },
@@ -173,7 +248,9 @@ const shipRules = {
 const fetchOrderDetail = async () => {
   loading.value = true
   try {
-    const data = await getOrderDetail(route.params.id)
+
+    const data = await getOrderDetail({orderCode:route.params.orderCode})
+      determineOrderStatus(data.orderProductVoList)
     orderDetail.value = data
   } catch (error) {
     console.error('Failed to fetch order detail:', error)
@@ -195,33 +272,24 @@ const getCarrierLabel = (value) => {
 }
 
 // 发货处理
-const handleShip = () => {
-  shipForm.value = {
-    trackingNo: '',
-    carrier: ''
-  }
+/*const handleShip = (id) => {
+  deliverOrderId.value = id
   shipDialogVisible.value = true
-}
+}*/
 
-const confirmShip = async () => {
-  if (!shipFormRef.value) return
-
-  await shipFormRef.value.validate(async (valid) => {
-    if (valid) {
-      submitting.value = true
-      try {
-        await shipOrder(orderDetail.value.id, shipForm.value)
+const confirmShip = async (id) => {
+    submitting.value = true
+    try {
+        await shipOrder(id, shipForm.value)
         ElMessage.success(t('message.shipSuccess'))
         shipDialogVisible.value = false
         fetchOrderDetail()
-      } catch (error) {
+    } catch (error) {
         console.error('Failed to ship order:', error)
         ElMessage.error(t('message.shipFailed'))
-      } finally {
+    } finally {
         submitting.value = false
-      }
     }
-  })
 }
 
 const goBack = () => {

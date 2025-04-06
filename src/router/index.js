@@ -159,7 +159,7 @@ const routes = [{
                 ]
             },
             {
-                path: 'order/:id',
+                path: 'order/:orderCode',
                 name: 'OrderDetail',
                 component: () => import('../views/order/detail.vue'),
                 meta: {
